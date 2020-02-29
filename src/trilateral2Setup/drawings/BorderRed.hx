@@ -4,11 +4,10 @@ import trilateral2Setup.drawings.DrawingLayout;
 import trilateral2.Shaper;
 // Color pallettes
 import pallette.QuickARGB;
-class MidGreySquareOutline extends DrawingLayout{
+class BorderRed extends DrawingLayout{
     override public function draw(){
         var len = Shaper.squareOutline( pen.drawType
-                            , ( bottomRight.x + centre.x )/2
-                            , ( bottomRight.y + centre.y )/2, 0.7*size, 6 );
-        pen.colorTriangles( MidGrey, len );
+                            , centre.x, centre.y, 600, 20 );
+        pen.colorTriangles( Red, len );
     }
 }

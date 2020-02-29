@@ -9,6 +9,6 @@ class MidGreySquareOutline extends DrawingLayout{
         var len = Shaper.squareOutline( pen.drawType
                             , ( bottomRight.x + centre.x )/2
                             , ( bottomRight.y + centre.y )/2, 0.7*size, 6 );
-        pen.colorTriangles( MidGrey, len );
+        pen.colorTriangles( Red, len );
     }
 }

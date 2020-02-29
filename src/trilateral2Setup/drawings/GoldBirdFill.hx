@@ -24,6 +24,11 @@ class GoldBirdFill extends DrawingLayout{
         var scaleTranslateContext = new ScaleTranslateContext( sketch, 0, 0, 1.5, 1.5 );
         var p = new SvgPath( scaleTranslateContext );
         p.parse( bird_d );
-        Fill.triangulate( pen, sketch, poly2tri );
+        /*
+    tess2;
+    polyK;
+    poly2tri;
+        */
+        Fill.triangulate( pen, sketch, tess2 );
     }
 }

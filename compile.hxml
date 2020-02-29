@@ -1,7 +1,7 @@
 -js binWebGL/test.js
 -cp src
 #-debug
-# html/js setup of simple webgl instance
+# html/js setup of simple webgl
 -lib htmlHelper
 # matrix and array data structures
 -lib geom
@@ -11,7 +11,7 @@
 -lib justPath
 # contours
 -lib trilateral2
-# colours
+# colours   
 -lib pallette
 # fill functions
 -lib hxPolyK

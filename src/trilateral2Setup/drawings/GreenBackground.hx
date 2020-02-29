@@ -4,11 +4,11 @@ import trilateral2Setup.drawings.DrawingLayout;
 import trilateral2.Shaper;
 // Color pallettes
 import pallette.QuickARGB;
-class GreenSquare extends DrawingLayout{
+class GreenBackground extends DrawingLayout{
     override public function draw(){
         var len = Shaper.square( pen.drawType
-                            , ( bottomRight.x + centre.x )/2
-                            , ( bottomRight.y + centre.y )/2,  0.7*size );
+                            , centre.x
+                            , centre.y,  600 );
         pen.colorTriangles( Green, len );
     }
 }
