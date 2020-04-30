@@ -73,6 +73,8 @@ import trilateral2Setup.helpers.LayoutPos;
 import trilateral2Setup.helpers.PathTests;
 // Font Letters as SVG paths
 import trilateral2Setup.helpers.DroidSans;
+// Grid
+import trilateral2Setup.drawings.GridLines;
 
 // Test shapes
 import trilateral2Setup.drawings.*;
@@ -105,7 +107,7 @@ class Main extends WebGLSetup {
     var verts                   = new Float32FlatTriangle( largeEnough );
     var textPos                 = new Float32FlatTriangleXY( largeEnough );
     var cols                    = new Float32FlatRGBA(largeEnough);
-    var ind                     = new UInt16Flat3(largeEnough);
+    var ind                     = new Int32Flat3(largeEnough);
     public static function main(){ new Main(); }
     public inline static var stageRadius: Int = 600;
     public function new(){
@@ -129,7 +131,11 @@ class Main extends WebGLSetup {
         BACK       = false;
         darkBackground();
     }
-    function createPen() pen = Pen.create( verts, cols );
+    function createPen() {
+        pen = Pen.create( verts, cols );
+        pen.transformMatrix = scaleToGL();
+        Shaper.transformMatrix = scaleToGL();
+    }
     function shaderAssign(){
         var vertexShader = '';
         var fragmentShader = '';
@@ -152,7 +158,7 @@ class Main extends WebGLSetup {
         addImage( haxeLogo );
         drawShapes();
         textPos.fromPosition( verts );
-        transformVerticesToGL();
+        //transformVerticesToGL();
         transformTexturePos();
         uploadVectors();
         setAnimate();
@@ -169,15 +175,15 @@ class Main extends WebGLSetup {
     
     function scaleToGL(){
         scale = 1/(stageRadius);
-        return new Matrix1x4( { x: scale, y: -scale, z: 1., w: 1. } )
-               * Matrix4x3.unit.translateXYZ( -1., 1., 0. );
+        var v = new Matrix1x4( { x: scale, y: -scale, z: scale, w: 1. } );
+        return ( Matrix4x3.unit.translateXYZ( -1., 1., 0. ) ).scaleByVector( v );
     }
     function transformTexturePos() textPos.transformAll( scaleTexture() );
     // currently not mapping texture properly
     function scaleTexture(){
         scale = 1/(stageRadius);
-        return new Matrix1x4( { x: scale*2, y: scale*2, z: 1., w: 1. } )
-              * Matrix4x3.translationXYZ( .5, .5, 0. );
+        var v = new Matrix1x4( { x: scale*2, y: scale*2, z: 1., w: 1. } );
+        return Matrix4x3.translationXYZ( .5, .5, 0. ).scaleByVector( v );
     }
     function uploadVectors(){
         vertices =  cast verts.getArray();
@@ -195,7 +201,7 @@ class Main extends WebGLSetup {
     }
     function createIndices(): UInt16Array{
         ind.pos = 0;
-        for( i in 0...verts.length ) {
+        for( i in 0...verts.size ) {
             ind[ 0 ] = i *3 + 0;
             ind[ 1 ] = i *3 + 1;
             ind[ 2 ] = i *3 + 2; 
@@ -222,7 +228,10 @@ class Main extends WebGLSetup {
         uvQuad( 50., 50., stageRadius, stageRadius );
         //if( backgroundSquare ) new GreenBackground( pen, layoutPos );
         if( backgroundSquare ) new BorderRed(       pen, layoutPos );
-        gridLines( 10, 0x0396FBF3, 0xF096FBF3 );
+        //gridLines( 10, 0x0396FBF3, 0xF096FBF3 );
+        var gridLines = new GridLines( pen, stageRadius );
+        gridLines.draw( 10, 0x0396FB00, 0xF096FBF3 );
+        
         // Bird no longer works suspect out of range may need to transform slightly.
         //new GoldBirdFill(                           pen, layoutPos );
         //new OrangeBirdOutline(                      pen, layoutPos );
@@ -270,27 +279,6 @@ class Main extends WebGLSetup {
                           , c.x, c.y
                           );
                           
-    }
-    function gridLines( spacing: Float, colorA: Int, colorB: Int ){
-        var gap = 15;
-        var len = Math.ceil((stageRadius*2 - 2*gap )/spacing);
-        pen.currentColor = colorB;
-        var sketch = new Sketch( pen, SketchForm.Crude, EndLineCurve.both );
-        sketch.width = spacing/4;
-        var delta = 0.;
-        sketch.moveTo( 0, 0 );
-        for( i in 1...len ){
-            var delta = i*spacing;
-            if( i % 10 == 0  ) {
-                pen.currentColor = colorA;
-            } else {
-                pen.currentColor = colorB;
-            }
-            sketch.moveTo( gap, delta + gap );
-            sketch.lineTo( stageRadius*2 - gap, delta + gap );
-            sketch.moveTo( delta + gap, gap );
-            sketch.lineTo( delta + gap, stageRadius*2 - gap );
-        }
     }
     inline
     function clearTriangles(){

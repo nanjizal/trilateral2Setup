@@ -21,6 +21,19 @@ var fracs_DifferencePreference = $hxEnums["fracs.DifferencePreference"] = { __en
 	,SMALL: {_hx_index:2,__enum__:"fracs.DifferencePreference",toString:$estr}
 	,LARGE: {_hx_index:3,__enum__:"fracs.DifferencePreference",toString:$estr}
 };
+var geom_flat_f32__$Float32Flat_Float32Flat_$Impl_$ = {};
+geom_flat_f32__$Float32Flat_Float32Flat_$Impl_$.__name__ = true;
+geom_flat_f32__$Float32Flat_Float32Flat_$Impl_$.get_size = function(this1) {
+	return this1[1] | 0;
+};
+geom_flat_f32__$Float32Flat_Float32Flat_$Impl_$.set_size = function(this1,id) {
+	var pos_ = id;
+	this1[0] = pos_;
+	if(this1[0] > this1[1] - 1) {
+		this1[1] = this1[0];
+	}
+	return id;
+};
 var geom_flat_f32__$Float32FlatRGBA_Float32FlatRGBA_$Impl_$ = {};
 geom_flat_f32__$Float32FlatRGBA_Float32FlatRGBA_$Impl_$.__name__ = true;
 geom_flat_f32__$Float32FlatRGBA_Float32FlatRGBA_$Impl_$.set_red = function(this1,v) {
@@ -115,19 +128,22 @@ geom_flat_f32__$Float32FlatTriangle_Float32FlatTriangle_$Impl_$.transform = func
 	geom_flat_f32__$Float32FlatTriangle_Float32FlatTriangle_$Impl_$.set_cy(this1,pc.y);
 	geom_flat_f32__$Float32FlatTriangle_Float32FlatTriangle_$Impl_$.set_cz(this1,pc.z);
 };
-geom_flat_f32__$Float32FlatTriangle_Float32FlatTriangle_$Impl_$.transformAll = function(this1,m) {
-	this1[0] = 0;
-	if(this1[0] > this1[1]) {
+geom_flat_f32__$Float32FlatTriangle_Float32FlatTriangle_$Impl_$.transformRange = function(this1,m,start,end) {
+	this1[0] = start;
+	if(this1[0] > this1[1] - 1) {
 		this1[1] = this1[0];
 	}
-	var _g = 0;
-	var _g1 = this1[1] | 0;
+	if(end > geom_flat_f32__$Float32Flat_Float32Flat_$Impl_$.get_size(this1) - 1) {
+		geom_flat_f32__$Float32Flat_Float32Flat_$Impl_$.get_size(this1);
+	}
+	var _g = start;
+	var _g1 = end + 1;
 	while(_g < _g1) {
 		var i = _g++;
 		geom_flat_f32__$Float32FlatTriangle_Float32FlatTriangle_$Impl_$.transform(this1,m);
 		var pos_ = this1[0] + 1.;
 		this1[0] = pos_;
-		if(this1[0] > this1[1]) {
+		if(this1[0] > this1[1] - 1) {
 			this1[1] = this1[0];
 		}
 	}
@@ -222,17 +238,17 @@ geom_flat_f32__$Float32FlatTriangleXY_Float32FlatTriangleXY_$Impl_$.transform = 
 };
 geom_flat_f32__$Float32FlatTriangleXY_Float32FlatTriangleXY_$Impl_$.transformAll = function(this1,m) {
 	this1[0] = 0;
-	if(this1[0] > this1[1]) {
+	if(this1[0] > this1[1] - 1) {
 		this1[1] = this1[0];
 	}
 	var _g = 0;
-	var _g1 = this1[1] | 0;
+	var _g1 = geom_flat_f32__$Float32Flat_Float32Flat_$Impl_$.get_size(this1);
 	while(_g < _g1) {
 		var i = _g++;
 		geom_flat_f32__$Float32FlatTriangleXY_Float32FlatTriangleXY_$Impl_$.transform(this1,m);
 		var pos_ = this1[0] + 1.;
 		this1[0] = pos_;
-		if(this1[0] > this1[1]) {
+		if(this1[0] > this1[1] - 1) {
 			this1[1] = this1[0];
 		}
 	}
@@ -15169,7 +15185,7 @@ trilateral2_Contour.prototype = {
 		this.pointsAnti[pA++] = this.lastAntiY;
 	}
 	,addQuads: function(clockWise,width_) {
-		var currQuadIndex = this.pen.drawType.pos;
+		var currQuadIndex = this.pen.drawType.get_pos();
 		var pC = 0;
 		var pA = 0;
 		if(clockWise && !this.lastClock) {
@@ -15186,8 +15202,8 @@ trilateral2_Contour.prototype = {
 				this.pointsClock[pC++] = this.ncy;
 				var _this = this.pen;
 				var v = this.quadIndex + 1;
-				_this.drawType.pos = v;
-				_this.colorType.pos = v;
+				_this.drawType.set_pos(v);
+				_this.colorType.set_pos(v);
 				var _this1 = this.pen;
 				var color = -1;
 				if(color == null) {
@@ -15197,6 +15213,9 @@ trilateral2_Contour.prototype = {
 					color = _this1.currentColor;
 				}
 				_this1.drawType.triangle(this.kax,this.kay,0,this.kbx,this.kby,0,this.ncx,this.ncy,0);
+				if(_this1.transformMatrix != null) {
+					_this1.drawType.transform(_this1.transformMatrix);
+				}
 				_this1.drawType.next();
 				_this1.colorType.cornerColors(color,color,color);
 			} else {
@@ -15212,8 +15231,8 @@ trilateral2_Contour.prototype = {
 				this.pointsClock[pC++] = this.kby;
 				var _this2 = this.pen;
 				var v1 = this.quadIndex + 1;
-				_this2.drawType.pos = v1;
-				_this2.colorType.pos = v1;
+				_this2.drawType.set_pos(v1);
+				_this2.colorType.set_pos(v1);
 				var _this3 = this.pen;
 				var color1 = -1;
 				if(color1 == null) {
@@ -15223,13 +15242,16 @@ trilateral2_Contour.prototype = {
 					color1 = _this3.currentColor;
 				}
 				_this3.drawType.triangle(this.kax,this.kay,0,this.kbx,this.kby,0,this.jxOld,this.jyOld,0);
+				if(_this3.transformMatrix != null) {
+					_this3.drawType.transform(_this3.transformMatrix);
+				}
 				_this3.drawType.next();
 				_this3.colorType.cornerColors(color1,color1,color1);
 			}
 			var _this4 = this.pen;
 			var v2 = this.quadIndex;
-			_this4.drawType.pos = v2;
-			_this4.colorType.pos = v2;
+			_this4.drawType.set_pos(v2);
+			_this4.colorType.set_pos(v2);
 			var _this5 = this.pen;
 			var color2 = -1;
 			if(color2 == null) {
@@ -15239,6 +15261,9 @@ trilateral2_Contour.prototype = {
 				color2 = _this5.currentColor;
 			}
 			_this5.drawType.triangle(this.kax,this.kay,0,this.kbx,this.kby,0,this.jx,this.jy,0);
+			if(_this5.transformMatrix != null) {
+				_this5.drawType.transform(_this5.transformMatrix);
+			}
 			_this5.drawType.next();
 			_this5.colorType.cornerColors(color2,color2,color2);
 		}
@@ -15256,8 +15281,8 @@ trilateral2_Contour.prototype = {
 				this.pointsClock[pC++] = this.kby;
 				var _this6 = this.pen;
 				var v3 = this.quadIndex;
-				_this6.drawType.pos = v3;
-				_this6.colorType.pos = v3;
+				_this6.drawType.set_pos(v3);
+				_this6.colorType.set_pos(v3);
 				var _this7 = this.pen;
 				var color3 = -1;
 				if(color3 == null) {
@@ -15267,12 +15292,15 @@ trilateral2_Contour.prototype = {
 					color3 = _this7.currentColor;
 				}
 				_this7.drawType.triangle(this.kax,this.kay,0,this.kbx,this.kby,0,this.jx,this.jy,0);
+				if(_this7.transformMatrix != null) {
+					_this7.drawType.transform(_this7.transformMatrix);
+				}
 				_this7.drawType.next();
 				_this7.colorType.cornerColors(color3,color3,color3);
 				var _this8 = this.pen;
 				var v4 = this.quadIndex + 1;
-				_this8.drawType.pos = v4;
-				_this8.colorType.pos = v4;
+				_this8.drawType.set_pos(v4);
+				_this8.colorType.set_pos(v4);
 				var _this9 = this.pen;
 				var color4 = -1;
 				if(color4 == null) {
@@ -15282,6 +15310,9 @@ trilateral2_Contour.prototype = {
 					color4 = _this9.currentColor;
 				}
 				_this9.drawType.triangle(this.kax,this.kay,0,this.kbx,this.kby,0,this.ncx,this.ncy,0);
+				if(_this9.transformMatrix != null) {
+					_this9.drawType.transform(_this9.transformMatrix);
+				}
 				_this9.drawType.next();
 				_this9.colorType.cornerColors(color4,color4,color4);
 			} else {
@@ -15297,8 +15328,8 @@ trilateral2_Contour.prototype = {
 				this.pointsClock[pC++] = this.kby;
 				var _this10 = this.pen;
 				var v5 = this.quadIndex;
-				_this10.drawType.pos = v5;
-				_this10.colorType.pos = v5;
+				_this10.drawType.set_pos(v5);
+				_this10.colorType.set_pos(v5);
 				var _this11 = this.pen;
 				var color5 = -1;
 				if(color5 == null) {
@@ -15308,12 +15339,15 @@ trilateral2_Contour.prototype = {
 					color5 = _this11.currentColor;
 				}
 				_this11.drawType.triangle(this.jxOld,this.jyOld,0,this.kbx,this.kby,0,this.jx,this.jy,0);
+				if(_this11.transformMatrix != null) {
+					_this11.drawType.transform(_this11.transformMatrix);
+				}
 				_this11.drawType.next();
 				_this11.colorType.cornerColors(color5,color5,color5);
 				var _this12 = this.pen;
 				var v6 = this.quadIndex + 1;
-				_this12.drawType.pos = v6;
-				_this12.colorType.pos = v6;
+				_this12.drawType.set_pos(v6);
+				_this12.colorType.set_pos(v6);
 				var _this13 = this.pen;
 				var color6 = -1;
 				if(color6 == null) {
@@ -15323,6 +15357,9 @@ trilateral2_Contour.prototype = {
 					color6 = _this13.currentColor;
 				}
 				_this13.drawType.triangle(this.jxOld,this.jyOld,0,this.kbx,this.kby,0,this.ncx,this.ncy,0);
+				if(_this13.transformMatrix != null) {
+					_this13.drawType.transform(_this13.transformMatrix);
+				}
 				_this13.drawType.next();
 				_this13.colorType.cornerColors(color6,color6,color6);
 			}
@@ -15330,8 +15367,8 @@ trilateral2_Contour.prototype = {
 		if(!clockWise && !this.lastClock) {
 			var _this14 = this.pen;
 			var v7 = this.quadIndex;
-			_this14.drawType.pos = v7;
-			_this14.colorType.pos = v7;
+			_this14.drawType.set_pos(v7);
+			_this14.colorType.set_pos(v7);
 			var _this15 = this.pen;
 			var color7 = -1;
 			if(color7 == null) {
@@ -15341,6 +15378,9 @@ trilateral2_Contour.prototype = {
 				color7 = _this15.currentColor;
 			}
 			_this15.drawType.triangle(this.kax,this.kay,0,this.jx,this.jy,0,this.kcx,this.kcy,0);
+			if(_this15.transformMatrix != null) {
+				_this15.drawType.transform(_this15.transformMatrix);
+			}
 			_this15.drawType.next();
 			_this15.colorType.cornerColors(color7,color7,color7);
 			if(this.count == 1) {
@@ -15356,8 +15396,8 @@ trilateral2_Contour.prototype = {
 				this.pointsClock[pC++] = this.jy;
 				var _this16 = this.pen;
 				var v8 = this.quadIndex + 1;
-				_this16.drawType.pos = v8;
-				_this16.colorType.pos = v8;
+				_this16.drawType.set_pos(v8);
+				_this16.colorType.set_pos(v8);
 				var _this17 = this.pen;
 				var color8 = -1;
 				if(color8 == null) {
@@ -15367,6 +15407,9 @@ trilateral2_Contour.prototype = {
 					color8 = _this17.currentColor;
 				}
 				_this17.drawType.triangle(this.kax,this.kay,0,this.jx,this.jy,0,this.ncx,this.ncy,0);
+				if(_this17.transformMatrix != null) {
+					_this17.drawType.transform(_this17.transformMatrix);
+				}
 				_this17.drawType.next();
 				_this17.colorType.cornerColors(color8,color8,color8);
 			} else {
@@ -15382,8 +15425,8 @@ trilateral2_Contour.prototype = {
 				this.pointsClock[pC++] = this.jy;
 				var _this18 = this.pen;
 				var v9 = this.quadIndex + 1;
-				_this18.drawType.pos = v9;
-				_this18.colorType.pos = v9;
+				_this18.drawType.set_pos(v9);
+				_this18.colorType.set_pos(v9);
 				var _this19 = this.pen;
 				var color9 = -1;
 				if(color9 == null) {
@@ -15393,6 +15436,9 @@ trilateral2_Contour.prototype = {
 					color9 = _this19.currentColor;
 				}
 				_this19.drawType.triangle(this.kax,this.kay,0,this.jx,this.jy,0,this.jxOld,this.jyOld,0);
+				if(_this19.transformMatrix != null) {
+					_this19.drawType.transform(_this19.transformMatrix);
+				}
 				_this19.drawType.next();
 				_this19.colorType.cornerColors(color9,color9,color9);
 			}
@@ -15411,8 +15457,8 @@ trilateral2_Contour.prototype = {
 				this.pointsClock[pC++] = this.ncy;
 				var _this20 = this.pen;
 				var v10 = this.quadIndex;
-				_this20.drawType.pos = v10;
-				_this20.colorType.pos = v10;
+				_this20.drawType.set_pos(v10);
+				_this20.colorType.set_pos(v10);
 				var _this21 = this.pen;
 				var color10 = -1;
 				if(color10 == null) {
@@ -15422,12 +15468,15 @@ trilateral2_Contour.prototype = {
 					color10 = _this21.currentColor;
 				}
 				_this21.drawType.triangle(this.kax,this.kay,0,this.jx,this.jy,0,this.kcx,this.kcy,0);
+				if(_this21.transformMatrix != null) {
+					_this21.drawType.transform(_this21.transformMatrix);
+				}
 				_this21.drawType.next();
 				_this21.colorType.cornerColors(color10,color10,color10);
 				var _this22 = this.pen;
 				var v11 = this.quadIndex + 1;
-				_this22.drawType.pos = v11;
-				_this22.colorType.pos = v11;
+				_this22.drawType.set_pos(v11);
+				_this22.colorType.set_pos(v11);
 				var _this23 = this.pen;
 				var color11 = -1;
 				if(color11 == null) {
@@ -15437,6 +15486,9 @@ trilateral2_Contour.prototype = {
 					color11 = _this23.currentColor;
 				}
 				_this23.drawType.triangle(this.kax,this.kay,0,this.jx,this.jy,0,this.ncx,this.ncy,0);
+				if(_this23.transformMatrix != null) {
+					_this23.drawType.transform(_this23.transformMatrix);
+				}
 				_this23.drawType.next();
 				_this23.colorType.cornerColors(color11,color11,color11);
 			} else {
@@ -15452,8 +15504,8 @@ trilateral2_Contour.prototype = {
 				this.pointsClock[pC++] = this.ncy;
 				var _this24 = this.pen;
 				var v12 = this.quadIndex;
-				_this24.drawType.pos = v12;
-				_this24.colorType.pos = v12;
+				_this24.drawType.set_pos(v12);
+				_this24.colorType.set_pos(v12);
 				var _this25 = this.pen;
 				var color12 = -1;
 				if(color12 == null) {
@@ -15463,12 +15515,15 @@ trilateral2_Contour.prototype = {
 					color12 = _this25.currentColor;
 				}
 				_this25.drawType.triangle(this.jxOld,this.jyOld,0,this.jx,this.jy,0,this.kcx,this.kcy,0);
+				if(_this25.transformMatrix != null) {
+					_this25.drawType.transform(_this25.transformMatrix);
+				}
 				_this25.drawType.next();
 				_this25.colorType.cornerColors(color12,color12,color12);
 				var _this26 = this.pen;
 				var v13 = this.quadIndex + 1;
-				_this26.drawType.pos = v13;
-				_this26.colorType.pos = v13;
+				_this26.drawType.set_pos(v13);
+				_this26.colorType.set_pos(v13);
 				var _this27 = this.pen;
 				var color13 = -1;
 				if(color13 == null) {
@@ -15478,13 +15533,16 @@ trilateral2_Contour.prototype = {
 					color13 = _this27.currentColor;
 				}
 				_this27.drawType.triangle(this.jxOld,this.jyOld,0,this.jx,this.jy,0,this.ncx,this.ncy,0);
+				if(_this27.transformMatrix != null) {
+					_this27.drawType.transform(_this27.transformMatrix);
+				}
 				_this27.drawType.next();
 				_this27.colorType.cornerColors(color13,color13,color13);
 			}
 		}
 		var _this28 = this.pen;
-		_this28.drawType.pos = currQuadIndex;
-		_this28.colorType.pos = currQuadIndex;
+		_this28.drawType.set_pos(currQuadIndex);
+		_this28.colorType.set_pos(currQuadIndex);
 	}
 	,__class__: trilateral2_Contour
 };
@@ -15497,6 +15555,8 @@ trilateral2_Pen.__name__ = true;
 trilateral2_Pen.prototype = {
 	__class__: trilateral2_Pen
 };
+var trilateral2_Shaper = function() { };
+trilateral2_Shaper.__name__ = true;
 var trilateral2_Sketch = function(pen_,sketchForm_,endLine_) {
 	if(endLine_ == null) {
 		endLine_ = 0;
@@ -15669,6 +15729,9 @@ trilateral2_Sketch.prototype = {
 			color = _this1.currentColor;
 		}
 		_this1.drawType.triangle(dxPrev_,dyPrev_,0,_this.dx,_this.dy,0,exPrev_,eyPrev_,0);
+		if(_this1.transformMatrix != null) {
+			_this1.drawType.transform(_this1.transformMatrix);
+		}
 		_this1.drawType.next();
 		_this1.colorType.cornerColors(color,color,color);
 		var _this2 = _this.pen;
@@ -15680,6 +15743,9 @@ trilateral2_Sketch.prototype = {
 			color1 = _this2.currentColor;
 		}
 		_this2.drawType.triangle(dxPrev_,dyPrev_,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+		if(_this2.transformMatrix != null) {
+			_this2.drawType.transform(_this2.transformMatrix);
+		}
 		_this2.drawType.next();
 		_this2.colorType.cornerColors(color1,color1,color1);
 	}
@@ -15800,6 +15866,9 @@ trilateral2_Sketch.prototype = {
 			color = _this1.currentColor;
 		}
 		_this1.drawType.triangle(dxPrev_,dyPrev_,0,_this.dx,_this.dy,0,exPrev_,eyPrev_,0);
+		if(_this1.transformMatrix != null) {
+			_this1.drawType.transform(_this1.transformMatrix);
+		}
 		_this1.drawType.next();
 		_this1.colorType.cornerColors(color,color,color);
 		var _this2 = _this.pen;
@@ -15811,6 +15880,9 @@ trilateral2_Sketch.prototype = {
 			color1 = _this2.currentColor;
 		}
 		_this2.drawType.triangle(dxPrev_,dyPrev_,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+		if(_this2.transformMatrix != null) {
+			_this2.drawType.transform(_this2.transformMatrix);
+		}
 		_this2.drawType.next();
 		_this2.colorType.cornerColors(color1,color1,color1);
 	}
@@ -16065,6 +16137,10 @@ trilateral2_Sketch.prototype = {
 				cy = ay_ + radius * Math.cos(angle);
 				if(i != 0) {
 					drawType.triangle(ax_,ay_,0,bx,by,0,cx,cy,0);
+					var m = trilateral2_Shaper.transformMatrix;
+					if(m != null) {
+						drawType.transform(m);
+					}
 					drawType.next();
 				}
 				angle += step1;
@@ -16215,6 +16291,10 @@ trilateral2_Sketch.prototype = {
 				cy1 = y_ + radius1 * Math.cos(angle1);
 				if(i1 != 0) {
 					drawType1.triangle(x_,y_,0,bx1,by1,0,cx1,cy1,0);
+					var m1 = trilateral2_Shaper.transformMatrix;
+					if(m1 != null) {
+						drawType1.transform(m1);
+					}
 					drawType1.next();
 				}
 				angle1 += step3;
@@ -16365,6 +16445,10 @@ trilateral2_Sketch.prototype = {
 				cy2 = ay_ + radius2 * Math.cos(angle2);
 				if(i2 != 0) {
 					drawType2.triangle(ax_,ay_,0,bx2,by2,0,cx2,cy2,0);
+					var m2 = trilateral2_Shaper.transformMatrix;
+					if(m2 != null) {
+						drawType2.transform(m2);
+					}
 					drawType2.next();
 				}
 				angle2 += step5;
@@ -16513,6 +16597,10 @@ trilateral2_Sketch.prototype = {
 				cy3 = y_ + radius3 * Math.cos(angle3);
 				if(i3 != 0) {
 					drawType3.triangle(x_,y_,0,bx3,by3,0,cx3,cy3,0);
+					var m3 = trilateral2_Shaper.transformMatrix;
+					if(m3 != null) {
+						drawType3.transform(m3);
+					}
 					drawType3.next();
 				}
 				angle3 += step7;
@@ -16537,6 +16625,9 @@ trilateral2_Sketch.prototype = {
 			color4 = _this5.currentColor;
 		}
 		_this5.drawType.triangle(dxPrev_,dyPrev_,0,_this.dx,_this.dy,0,exPrev_,eyPrev_,0);
+		if(_this5.transformMatrix != null) {
+			_this5.drawType.transform(_this5.transformMatrix);
+		}
 		_this5.drawType.next();
 		_this5.colorType.cornerColors(color4,color4,color4);
 		var _this6 = _this.pen;
@@ -16548,6 +16639,9 @@ trilateral2_Sketch.prototype = {
 			color5 = _this6.currentColor;
 		}
 		_this6.drawType.triangle(dxPrev_,dyPrev_,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+		if(_this6.transformMatrix != null) {
+			_this6.drawType.transform(_this6.transformMatrix);
+		}
 		_this6.drawType.next();
 		_this6.colorType.cornerColors(color5,color5,color5);
 	}
@@ -16942,6 +17036,10 @@ trilateral2_Sketch.prototype = {
 				temp[p2++] = cy;
 				if(i != 0) {
 					drawType.triangle(ax,ay,0,bx,by,0,cx,cy,0);
+					var m = trilateral2_Shaper.transformMatrix;
+					if(m != null) {
+						drawType.transform(m);
+					}
 					drawType.next();
 				}
 				angle += step1;
@@ -16977,7 +17075,7 @@ trilateral2_Sketch.prototype = {
 		if(_this.count != 0) {
 			_this.addQuads(clockWise,width_);
 		}
-		_this.quadIndex = _this.pen.drawType.pos;
+		_this.quadIndex = _this.pen.drawType.get_pos();
 		if(_this.count == 0) {
 			_this.penultimateAX = _this.dxPrev;
 			_this.penultimateAY = _this.dyPrev;
@@ -16996,6 +17094,9 @@ trilateral2_Sketch.prototype = {
 				color1 = _this2.currentColor;
 			}
 			_this2.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+			if(_this2.transformMatrix != null) {
+				_this2.drawType.transform(_this2.transformMatrix);
+			}
 			_this2.drawType.next();
 			_this2.colorType.cornerColors(color1,color1,color1);
 			var _this3 = _this.pen;
@@ -17007,6 +17108,9 @@ trilateral2_Sketch.prototype = {
 				color2 = _this3.currentColor;
 			}
 			_this3.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.exPrev,_this.eyPrev,0);
+			if(_this3.transformMatrix != null) {
+				_this3.drawType.transform(_this3.transformMatrix);
+			}
 			_this3.drawType.next();
 			_this3.colorType.cornerColors(color2,color2,color2);
 		} else {
@@ -17028,6 +17132,9 @@ trilateral2_Sketch.prototype = {
 					color3 = _this4.currentColor;
 				}
 				_this4.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+				if(_this4.transformMatrix != null) {
+					_this4.drawType.transform(_this4.transformMatrix);
+				}
 				_this4.drawType.next();
 				_this4.colorType.cornerColors(color3,color3,color3);
 				var _this5 = _this.pen;
@@ -17039,6 +17146,9 @@ trilateral2_Sketch.prototype = {
 					color4 = _this5.currentColor;
 				}
 				_this5.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.exPrev,_this.eyPrev,0);
+				if(_this5.transformMatrix != null) {
+					_this5.drawType.transform(_this5.transformMatrix);
+				}
 				_this5.drawType.next();
 				_this5.colorType.cornerColors(color4,color4,color4);
 			}
@@ -17060,6 +17170,9 @@ trilateral2_Sketch.prototype = {
 					color5 = _this6.currentColor;
 				}
 				_this6.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+				if(_this6.transformMatrix != null) {
+					_this6.drawType.transform(_this6.transformMatrix);
+				}
 				_this6.drawType.next();
 				_this6.colorType.cornerColors(color5,color5,color5);
 				var _this7 = _this.pen;
@@ -17071,6 +17184,9 @@ trilateral2_Sketch.prototype = {
 					color6 = _this7.currentColor;
 				}
 				_this7.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.exPrev,_this.eyPrev,0);
+				if(_this7.transformMatrix != null) {
+					_this7.drawType.transform(_this7.transformMatrix);
+				}
 				_this7.drawType.next();
 				_this7.colorType.cornerColors(color6,color6,color6);
 			}
@@ -17092,6 +17208,9 @@ trilateral2_Sketch.prototype = {
 					color7 = _this8.currentColor;
 				}
 				_this8.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.jx,_this.jy,0);
+				if(_this8.transformMatrix != null) {
+					_this8.drawType.transform(_this8.transformMatrix);
+				}
 				_this8.drawType.next();
 				_this8.colorType.cornerColors(color7,color7,color7);
 				var _this9 = _this.pen;
@@ -17103,6 +17222,9 @@ trilateral2_Sketch.prototype = {
 					color8 = _this9.currentColor;
 				}
 				_this9.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+				if(_this9.transformMatrix != null) {
+					_this9.drawType.transform(_this9.transformMatrix);
+				}
 				_this9.drawType.next();
 				_this9.colorType.cornerColors(color8,color8,color8);
 			}
@@ -17124,6 +17246,9 @@ trilateral2_Sketch.prototype = {
 					color9 = _this10.currentColor;
 				}
 				_this10.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+				if(_this10.transformMatrix != null) {
+					_this10.drawType.transform(_this10.transformMatrix);
+				}
 				_this10.drawType.next();
 				_this10.colorType.cornerColors(color9,color9,color9);
 				var _this11 = _this.pen;
@@ -17135,6 +17260,9 @@ trilateral2_Sketch.prototype = {
 					color10 = _this11.currentColor;
 				}
 				_this11.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.jx,_this.jy,0,_this.ex,_this.ey,0);
+				if(_this11.transformMatrix != null) {
+					_this11.drawType.transform(_this11.transformMatrix);
+				}
 				_this11.drawType.next();
 				_this11.colorType.cornerColors(color10,color10,color10);
 			}
@@ -17165,6 +17293,10 @@ trilateral2_Sketch.prototype = {
 					edgePoly[p21++] = cy1;
 					if(i3 != 0) {
 						drawType1.triangle(ax_,ay_,0,bx1,by1,0,cx1,cy1,0);
+						var m1 = trilateral2_Shaper.transformMatrix;
+						if(m1 != null) {
+							drawType1.transform(m1);
+						}
 						drawType1.next();
 					}
 					angle1 += step3;
@@ -17203,6 +17335,10 @@ trilateral2_Sketch.prototype = {
 					edgePoly1[p22++] = cy2;
 					if(i4 != 0) {
 						drawType2.triangle(ax_,ay_,0,bx2,by2,0,cx2,cy2,0);
+						var m2 = trilateral2_Shaper.transformMatrix;
+						if(m2 != null) {
+							drawType2.transform(m2);
+						}
 						drawType2.next();
 					}
 					angle2 += step5;
@@ -17228,6 +17364,9 @@ trilateral2_Sketch.prototype = {
 					color13 = _this14.currentColor;
 				}
 				_this14.drawType.triangle(_this.dxOld,_this.dyOld,0,_this.exPrev,_this.eyPrev,0,_this.jx,_this.jy,0);
+				if(_this14.transformMatrix != null) {
+					_this14.drawType.transform(_this14.transformMatrix);
+				}
 				_this14.drawType.next();
 				_this14.colorType.cornerColors(color13,color13,color13);
 			} else {
@@ -17240,6 +17379,9 @@ trilateral2_Sketch.prototype = {
 					color14 = _this15.currentColor;
 				}
 				_this15.drawType.triangle(_this.exOld,_this.eyOld,0,_this.dxPrev,_this.dyPrev,0,_this.jx,_this.jy,0);
+				if(_this15.transformMatrix != null) {
+					_this15.drawType.transform(_this15.transformMatrix);
+				}
 				_this15.drawType.next();
 				_this15.colorType.cornerColors(color14,color14,color14);
 			}
@@ -17263,6 +17405,9 @@ trilateral2_Sketch.prototype = {
 					color15 = _this16.currentColor;
 				}
 				_this16.drawType.triangle(_this.ax,_this.ay,0,_this.dxOld,_this.dyOld,0,_this.jx,_this.jy,0);
+				if(_this16.transformMatrix != null) {
+					_this16.drawType.transform(_this16.transformMatrix);
+				}
 				_this16.drawType.next();
 				_this16.colorType.cornerColors(color15,color15,color15);
 				var _this17 = _this.pen;
@@ -17274,6 +17419,9 @@ trilateral2_Sketch.prototype = {
 					color16 = _this17.currentColor;
 				}
 				_this17.drawType.triangle(_this.ax,_this.ay,0,_this.exPrev,_this.eyPrev,0,_this.jx,_this.jy,0);
+				if(_this17.transformMatrix != null) {
+					_this17.drawType.transform(_this17.transformMatrix);
+				}
 				_this17.drawType.next();
 				_this17.colorType.cornerColors(color16,color16,color16);
 			} else {
@@ -17286,6 +17434,9 @@ trilateral2_Sketch.prototype = {
 					color17 = _this18.currentColor;
 				}
 				_this18.drawType.triangle(_this.ax,_this.ay,0,_this.exOld,_this.eyOld,0,_this.jx,_this.jy,0);
+				if(_this18.transformMatrix != null) {
+					_this18.drawType.transform(_this18.transformMatrix);
+				}
 				_this18.drawType.next();
 				_this18.colorType.cornerColors(color17,color17,color17);
 				var _this19 = _this.pen;
@@ -17297,6 +17448,9 @@ trilateral2_Sketch.prototype = {
 					color18 = _this19.currentColor;
 				}
 				_this19.drawType.triangle(_this.ax,_this.ay,0,_this.dxPrev,_this.dyPrev,0,_this.jx,_this.jy,0);
+				if(_this19.transformMatrix != null) {
+					_this19.drawType.transform(_this19.transformMatrix);
+				}
 				_this19.drawType.next();
 				_this19.colorType.cornerColors(color18,color18,color18);
 			}
@@ -17701,6 +17855,10 @@ trilateral2_Sketch.prototype = {
 				temp[p2++] = cy;
 				if(i != 0) {
 					drawType.triangle(ax,ay,0,bx,by,0,cx,cy,0);
+					var m = trilateral2_Shaper.transformMatrix;
+					if(m != null) {
+						drawType.transform(m);
+					}
 					drawType.next();
 				}
 				angle += step1;
@@ -17740,6 +17898,9 @@ trilateral2_Sketch.prototype = {
 				color1 = _this2.currentColor;
 			}
 			_this2.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+			if(_this2.transformMatrix != null) {
+				_this2.drawType.transform(_this2.transformMatrix);
+			}
 			_this2.drawType.next();
 			_this2.colorType.cornerColors(color1,color1,color1);
 			var _this3 = _this.pen;
@@ -17748,13 +17909,16 @@ trilateral2_Sketch.prototype = {
 				color2 = _this3.currentColor;
 			}
 			_this3.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.exPrev,_this.eyPrev,0);
+			if(_this3.transformMatrix != null) {
+				_this3.drawType.transform(_this3.transformMatrix);
+			}
 			_this3.drawType.next();
 			_this3.colorType.cornerColors(color2,color2,color2);
 		} else {
 			if(_this.count != 0) {
 				_this.addQuads(clockWise,width_);
 			}
-			_this.quadIndex = _this.pen.drawType.pos;
+			_this.quadIndex = _this.pen.drawType.get_pos();
 			if(_this.count == 0) {
 				_this.penultimateAX = _this.dxPrev;
 				_this.penultimateAY = _this.dyPrev;
@@ -17773,6 +17937,9 @@ trilateral2_Sketch.prototype = {
 					color3 = _this4.currentColor;
 				}
 				_this4.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+				if(_this4.transformMatrix != null) {
+					_this4.drawType.transform(_this4.transformMatrix);
+				}
 				_this4.drawType.next();
 				_this4.colorType.cornerColors(color3,color3,color3);
 				var _this5 = _this.pen;
@@ -17784,6 +17951,9 @@ trilateral2_Sketch.prototype = {
 					color4 = _this5.currentColor;
 				}
 				_this5.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.exPrev,_this.eyPrev,0);
+				if(_this5.transformMatrix != null) {
+					_this5.drawType.transform(_this5.transformMatrix);
+				}
 				_this5.drawType.next();
 				_this5.colorType.cornerColors(color4,color4,color4);
 			} else {
@@ -17805,6 +17975,9 @@ trilateral2_Sketch.prototype = {
 						color5 = _this6.currentColor;
 					}
 					_this6.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+					if(_this6.transformMatrix != null) {
+						_this6.drawType.transform(_this6.transformMatrix);
+					}
 					_this6.drawType.next();
 					_this6.colorType.cornerColors(color5,color5,color5);
 					var _this7 = _this.pen;
@@ -17816,6 +17989,9 @@ trilateral2_Sketch.prototype = {
 						color6 = _this7.currentColor;
 					}
 					_this7.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.exPrev,_this.eyPrev,0);
+					if(_this7.transformMatrix != null) {
+						_this7.drawType.transform(_this7.transformMatrix);
+					}
 					_this7.drawType.next();
 					_this7.colorType.cornerColors(color6,color6,color6);
 				}
@@ -17837,6 +18013,9 @@ trilateral2_Sketch.prototype = {
 						color7 = _this8.currentColor;
 					}
 					_this8.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+					if(_this8.transformMatrix != null) {
+						_this8.drawType.transform(_this8.transformMatrix);
+					}
 					_this8.drawType.next();
 					_this8.colorType.cornerColors(color7,color7,color7);
 					var _this9 = _this.pen;
@@ -17848,6 +18027,9 @@ trilateral2_Sketch.prototype = {
 						color8 = _this9.currentColor;
 					}
 					_this9.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.exPrev,_this.eyPrev,0);
+					if(_this9.transformMatrix != null) {
+						_this9.drawType.transform(_this9.transformMatrix);
+					}
 					_this9.drawType.next();
 					_this9.colorType.cornerColors(color8,color8,color8);
 				}
@@ -17869,6 +18051,9 @@ trilateral2_Sketch.prototype = {
 						color9 = _this10.currentColor;
 					}
 					_this10.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.jx,_this.jy,0);
+					if(_this10.transformMatrix != null) {
+						_this10.drawType.transform(_this10.transformMatrix);
+					}
 					_this10.drawType.next();
 					_this10.colorType.cornerColors(color9,color9,color9);
 					var _this11 = _this.pen;
@@ -17880,6 +18065,9 @@ trilateral2_Sketch.prototype = {
 						color10 = _this11.currentColor;
 					}
 					_this11.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+					if(_this11.transformMatrix != null) {
+						_this11.drawType.transform(_this11.transformMatrix);
+					}
 					_this11.drawType.next();
 					_this11.colorType.cornerColors(color10,color10,color10);
 				}
@@ -17901,6 +18089,9 @@ trilateral2_Sketch.prototype = {
 						color11 = _this12.currentColor;
 					}
 					_this12.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+					if(_this12.transformMatrix != null) {
+						_this12.drawType.transform(_this12.transformMatrix);
+					}
 					_this12.drawType.next();
 					_this12.colorType.cornerColors(color11,color11,color11);
 					var _this13 = _this.pen;
@@ -17912,6 +18103,9 @@ trilateral2_Sketch.prototype = {
 						color12 = _this13.currentColor;
 					}
 					_this13.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.jx,_this.jy,0,_this.ex,_this.ey,0);
+					if(_this13.transformMatrix != null) {
+						_this13.drawType.transform(_this13.transformMatrix);
+					}
 					_this13.drawType.next();
 					_this13.colorType.cornerColors(color12,color12,color12);
 				}
@@ -17943,6 +18137,10 @@ trilateral2_Sketch.prototype = {
 					edgePoly[p21++] = cy1;
 					if(i3 != 0) {
 						drawType1.triangle(ax_,ay_,0,bx1,by1,0,cx1,cy1,0);
+						var m1 = trilateral2_Shaper.transformMatrix;
+						if(m1 != null) {
+							drawType1.transform(m1);
+						}
 						drawType1.next();
 					}
 					angle1 += step3;
@@ -17981,6 +18179,10 @@ trilateral2_Sketch.prototype = {
 					edgePoly1[p22++] = cy2;
 					if(i4 != 0) {
 						drawType2.triangle(ax_,ay_,0,bx2,by2,0,cx2,cy2,0);
+						var m2 = trilateral2_Shaper.transformMatrix;
+						if(m2 != null) {
+							drawType2.transform(m2);
+						}
 						drawType2.next();
 					}
 					angle2 += step5;
@@ -18007,6 +18209,9 @@ trilateral2_Sketch.prototype = {
 						color15 = _this16.currentColor;
 					}
 					_this16.drawType.triangle(_this.dxOld,_this.dyOld,0,_this.exPrev,_this.eyPrev,0,_this.ax,_this.ay,0);
+					if(_this16.transformMatrix != null) {
+						_this16.drawType.transform(_this16.transformMatrix);
+					}
 					_this16.drawType.next();
 					_this16.colorType.cornerColors(color15,color15,color15);
 				} else {
@@ -18019,6 +18224,9 @@ trilateral2_Sketch.prototype = {
 						color16 = _this17.currentColor;
 					}
 					_this17.drawType.triangle(_this.exOld,_this.eyOld,0,_this.dxPrev,_this.dyPrev,0,_this.ax,_this.ay,0);
+					if(_this17.transformMatrix != null) {
+						_this17.drawType.transform(_this17.transformMatrix);
+					}
 					_this17.drawType.next();
 					_this17.colorType.cornerColors(color16,color16,color16);
 				}
@@ -18032,6 +18240,9 @@ trilateral2_Sketch.prototype = {
 					color17 = _this18.currentColor;
 				}
 				_this18.drawType.triangle(_this.dxOld,_this.dyOld,0,_this.exPrev,_this.eyPrev,0,_this.jx,_this.jy,0);
+				if(_this18.transformMatrix != null) {
+					_this18.drawType.transform(_this18.transformMatrix);
+				}
 				_this18.drawType.next();
 				_this18.colorType.cornerColors(color17,color17,color17);
 			} else {
@@ -18044,6 +18255,9 @@ trilateral2_Sketch.prototype = {
 					color18 = _this19.currentColor;
 				}
 				_this19.drawType.triangle(_this.exOld,_this.eyOld,0,_this.dxPrev,_this.dyPrev,0,_this.jx,_this.jy,0);
+				if(_this19.transformMatrix != null) {
+					_this19.drawType.transform(_this19.transformMatrix);
+				}
 				_this19.drawType.next();
 				_this19.colorType.cornerColors(color18,color18,color18);
 			}
@@ -18067,6 +18281,9 @@ trilateral2_Sketch.prototype = {
 					color19 = _this20.currentColor;
 				}
 				_this20.drawType.triangle(_this.ax,_this.ay,0,_this.dxOld,_this.dyOld,0,_this.jx,_this.jy,0);
+				if(_this20.transformMatrix != null) {
+					_this20.drawType.transform(_this20.transformMatrix);
+				}
 				_this20.drawType.next();
 				_this20.colorType.cornerColors(color19,color19,color19);
 				var _this21 = _this.pen;
@@ -18078,6 +18295,9 @@ trilateral2_Sketch.prototype = {
 					color20 = _this21.currentColor;
 				}
 				_this21.drawType.triangle(_this.ax,_this.ay,0,_this.exPrev,_this.eyPrev,0,_this.jx,_this.jy,0);
+				if(_this21.transformMatrix != null) {
+					_this21.drawType.transform(_this21.transformMatrix);
+				}
 				_this21.drawType.next();
 				_this21.colorType.cornerColors(color20,color20,color20);
 			} else {
@@ -18090,6 +18310,9 @@ trilateral2_Sketch.prototype = {
 					color21 = _this22.currentColor;
 				}
 				_this22.drawType.triangle(_this.ax,_this.ay,0,_this.exOld,_this.eyOld,0,_this.jx,_this.jy,0);
+				if(_this22.transformMatrix != null) {
+					_this22.drawType.transform(_this22.transformMatrix);
+				}
 				_this22.drawType.next();
 				_this22.colorType.cornerColors(color21,color21,color21);
 				var _this23 = _this.pen;
@@ -18101,6 +18324,9 @@ trilateral2_Sketch.prototype = {
 					color22 = _this23.currentColor;
 				}
 				_this23.drawType.triangle(_this.ax,_this.ay,0,_this.dxPrev,_this.dyPrev,0,_this.jx,_this.jy,0);
+				if(_this23.transformMatrix != null) {
+					_this23.drawType.transform(_this23.transformMatrix);
+				}
 				_this23.drawType.next();
 				_this23.colorType.cornerColors(color22,color22,color22);
 			}
@@ -18501,6 +18727,10 @@ trilateral2_Sketch.prototype = {
 				temp[p2++] = cy;
 				if(i != 0) {
 					drawType.triangle(ax,ay,0,bx,by,0,cx,cy,0);
+					var m = trilateral2_Shaper.transformMatrix;
+					if(m != null) {
+						drawType.transform(m);
+					}
 					drawType.next();
 				}
 				angle += step1;
@@ -18536,7 +18766,7 @@ trilateral2_Sketch.prototype = {
 		if(_this.count != 0) {
 			_this.addQuads(clockWise,width_);
 		}
-		_this.quadIndex = _this.pen.drawType.pos;
+		_this.quadIndex = _this.pen.drawType.get_pos();
 		if(_this.count == 0) {
 			_this.penultimateAX = _this.dxPrev;
 			_this.penultimateAY = _this.dyPrev;
@@ -18555,6 +18785,9 @@ trilateral2_Sketch.prototype = {
 				color1 = _this2.currentColor;
 			}
 			_this2.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+			if(_this2.transformMatrix != null) {
+				_this2.drawType.transform(_this2.transformMatrix);
+			}
 			_this2.drawType.next();
 			_this2.colorType.cornerColors(color1,color1,color1);
 			var _this3 = _this.pen;
@@ -18566,6 +18799,9 @@ trilateral2_Sketch.prototype = {
 				color2 = _this3.currentColor;
 			}
 			_this3.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.exPrev,_this.eyPrev,0);
+			if(_this3.transformMatrix != null) {
+				_this3.drawType.transform(_this3.transformMatrix);
+			}
 			_this3.drawType.next();
 			_this3.colorType.cornerColors(color2,color2,color2);
 		} else {
@@ -18587,6 +18823,9 @@ trilateral2_Sketch.prototype = {
 					color3 = _this4.currentColor;
 				}
 				_this4.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+				if(_this4.transformMatrix != null) {
+					_this4.drawType.transform(_this4.transformMatrix);
+				}
 				_this4.drawType.next();
 				_this4.colorType.cornerColors(color3,color3,color3);
 				var _this5 = _this.pen;
@@ -18598,6 +18837,9 @@ trilateral2_Sketch.prototype = {
 					color4 = _this5.currentColor;
 				}
 				_this5.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.exPrev,_this.eyPrev,0);
+				if(_this5.transformMatrix != null) {
+					_this5.drawType.transform(_this5.transformMatrix);
+				}
 				_this5.drawType.next();
 				_this5.colorType.cornerColors(color4,color4,color4);
 			}
@@ -18619,6 +18861,9 @@ trilateral2_Sketch.prototype = {
 					color5 = _this6.currentColor;
 				}
 				_this6.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+				if(_this6.transformMatrix != null) {
+					_this6.drawType.transform(_this6.transformMatrix);
+				}
 				_this6.drawType.next();
 				_this6.colorType.cornerColors(color5,color5,color5);
 				var _this7 = _this.pen;
@@ -18630,6 +18875,9 @@ trilateral2_Sketch.prototype = {
 					color6 = _this7.currentColor;
 				}
 				_this7.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.exPrev,_this.eyPrev,0);
+				if(_this7.transformMatrix != null) {
+					_this7.drawType.transform(_this7.transformMatrix);
+				}
 				_this7.drawType.next();
 				_this7.colorType.cornerColors(color6,color6,color6);
 			}
@@ -18651,6 +18899,9 @@ trilateral2_Sketch.prototype = {
 					color7 = _this8.currentColor;
 				}
 				_this8.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.jx,_this.jy,0);
+				if(_this8.transformMatrix != null) {
+					_this8.drawType.transform(_this8.transformMatrix);
+				}
 				_this8.drawType.next();
 				_this8.colorType.cornerColors(color7,color7,color7);
 				var _this9 = _this.pen;
@@ -18662,6 +18913,9 @@ trilateral2_Sketch.prototype = {
 					color8 = _this9.currentColor;
 				}
 				_this9.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+				if(_this9.transformMatrix != null) {
+					_this9.drawType.transform(_this9.transformMatrix);
+				}
 				_this9.drawType.next();
 				_this9.colorType.cornerColors(color8,color8,color8);
 			}
@@ -18683,6 +18937,9 @@ trilateral2_Sketch.prototype = {
 					color9 = _this10.currentColor;
 				}
 				_this10.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+				if(_this10.transformMatrix != null) {
+					_this10.drawType.transform(_this10.transformMatrix);
+				}
 				_this10.drawType.next();
 				_this10.colorType.cornerColors(color9,color9,color9);
 				var _this11 = _this.pen;
@@ -18694,6 +18951,9 @@ trilateral2_Sketch.prototype = {
 					color10 = _this11.currentColor;
 				}
 				_this11.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.jx,_this.jy,0,_this.ex,_this.ey,0);
+				if(_this11.transformMatrix != null) {
+					_this11.drawType.transform(_this11.transformMatrix);
+				}
 				_this11.drawType.next();
 				_this11.colorType.cornerColors(color10,color10,color10);
 			}
@@ -18724,6 +18984,10 @@ trilateral2_Sketch.prototype = {
 					edgePoly[p21++] = cy1;
 					if(i3 != 0) {
 						drawType1.triangle(ax_,ay_,0,bx1,by1,0,cx1,cy1,0);
+						var m1 = trilateral2_Shaper.transformMatrix;
+						if(m1 != null) {
+							drawType1.transform(m1);
+						}
 						drawType1.next();
 					}
 					angle1 += step3;
@@ -18762,6 +19026,10 @@ trilateral2_Sketch.prototype = {
 					edgePoly1[p22++] = cy2;
 					if(i4 != 0) {
 						drawType2.triangle(ax_,ay_,0,bx2,by2,0,cx2,cy2,0);
+						var m2 = trilateral2_Shaper.transformMatrix;
+						if(m2 != null) {
+							drawType2.transform(m2);
+						}
 						drawType2.next();
 					}
 					angle2 += step5;
@@ -18787,6 +19055,9 @@ trilateral2_Sketch.prototype = {
 					color13 = _this14.currentColor;
 				}
 				_this14.drawType.triangle(_this.dxOld,_this.dyOld,0,_this.exPrev,_this.eyPrev,0,_this.jx,_this.jy,0);
+				if(_this14.transformMatrix != null) {
+					_this14.drawType.transform(_this14.transformMatrix);
+				}
 				_this14.drawType.next();
 				_this14.colorType.cornerColors(color13,color13,color13);
 			} else {
@@ -18799,6 +19070,9 @@ trilateral2_Sketch.prototype = {
 					color14 = _this15.currentColor;
 				}
 				_this15.drawType.triangle(_this.exOld,_this.eyOld,0,_this.dxPrev,_this.dyPrev,0,_this.jx,_this.jy,0);
+				if(_this15.transformMatrix != null) {
+					_this15.drawType.transform(_this15.transformMatrix);
+				}
 				_this15.drawType.next();
 				_this15.colorType.cornerColors(color14,color14,color14);
 			}
@@ -18822,6 +19096,9 @@ trilateral2_Sketch.prototype = {
 					color15 = _this16.currentColor;
 				}
 				_this16.drawType.triangle(_this.ax,_this.ay,0,_this.dxOld,_this.dyOld,0,_this.jx,_this.jy,0);
+				if(_this16.transformMatrix != null) {
+					_this16.drawType.transform(_this16.transformMatrix);
+				}
 				_this16.drawType.next();
 				_this16.colorType.cornerColors(color15,color15,color15);
 				var _this17 = _this.pen;
@@ -18833,6 +19110,9 @@ trilateral2_Sketch.prototype = {
 					color16 = _this17.currentColor;
 				}
 				_this17.drawType.triangle(_this.ax,_this.ay,0,_this.exPrev,_this.eyPrev,0,_this.jx,_this.jy,0);
+				if(_this17.transformMatrix != null) {
+					_this17.drawType.transform(_this17.transformMatrix);
+				}
 				_this17.drawType.next();
 				_this17.colorType.cornerColors(color16,color16,color16);
 			} else {
@@ -18845,6 +19125,9 @@ trilateral2_Sketch.prototype = {
 					color17 = _this18.currentColor;
 				}
 				_this18.drawType.triangle(_this.ax,_this.ay,0,_this.exOld,_this.eyOld,0,_this.jx,_this.jy,0);
+				if(_this18.transformMatrix != null) {
+					_this18.drawType.transform(_this18.transformMatrix);
+				}
 				_this18.drawType.next();
 				_this18.colorType.cornerColors(color17,color17,color17);
 				var _this19 = _this.pen;
@@ -18856,6 +19139,9 @@ trilateral2_Sketch.prototype = {
 					color18 = _this19.currentColor;
 				}
 				_this19.drawType.triangle(_this.ax,_this.ay,0,_this.dxPrev,_this.dyPrev,0,_this.jx,_this.jy,0);
+				if(_this19.transformMatrix != null) {
+					_this19.drawType.transform(_this19.transformMatrix);
+				}
 				_this19.drawType.next();
 				_this19.colorType.cornerColors(color18,color18,color18);
 			}
@@ -19260,6 +19546,10 @@ trilateral2_Sketch.prototype = {
 				temp[p2++] = cy;
 				if(i != 0) {
 					drawType.triangle(ax,ay,0,bx,by,0,cx,cy,0);
+					var m = trilateral2_Shaper.transformMatrix;
+					if(m != null) {
+						drawType.transform(m);
+					}
 					drawType.next();
 				}
 				angle += step1;
@@ -19299,6 +19589,9 @@ trilateral2_Sketch.prototype = {
 				color1 = _this2.currentColor;
 			}
 			_this2.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+			if(_this2.transformMatrix != null) {
+				_this2.drawType.transform(_this2.transformMatrix);
+			}
 			_this2.drawType.next();
 			_this2.colorType.cornerColors(color1,color1,color1);
 			var _this3 = _this.pen;
@@ -19307,13 +19600,16 @@ trilateral2_Sketch.prototype = {
 				color2 = _this3.currentColor;
 			}
 			_this3.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.exPrev,_this.eyPrev,0);
+			if(_this3.transformMatrix != null) {
+				_this3.drawType.transform(_this3.transformMatrix);
+			}
 			_this3.drawType.next();
 			_this3.colorType.cornerColors(color2,color2,color2);
 		} else {
 			if(_this.count != 0) {
 				_this.addQuads(clockWise,width_);
 			}
-			_this.quadIndex = _this.pen.drawType.pos;
+			_this.quadIndex = _this.pen.drawType.get_pos();
 			if(_this.count == 0) {
 				_this.penultimateAX = _this.dxPrev;
 				_this.penultimateAY = _this.dyPrev;
@@ -19332,6 +19628,9 @@ trilateral2_Sketch.prototype = {
 					color3 = _this4.currentColor;
 				}
 				_this4.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+				if(_this4.transformMatrix != null) {
+					_this4.drawType.transform(_this4.transformMatrix);
+				}
 				_this4.drawType.next();
 				_this4.colorType.cornerColors(color3,color3,color3);
 				var _this5 = _this.pen;
@@ -19343,6 +19642,9 @@ trilateral2_Sketch.prototype = {
 					color4 = _this5.currentColor;
 				}
 				_this5.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.exPrev,_this.eyPrev,0);
+				if(_this5.transformMatrix != null) {
+					_this5.drawType.transform(_this5.transformMatrix);
+				}
 				_this5.drawType.next();
 				_this5.colorType.cornerColors(color4,color4,color4);
 			} else {
@@ -19364,6 +19666,9 @@ trilateral2_Sketch.prototype = {
 						color5 = _this6.currentColor;
 					}
 					_this6.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+					if(_this6.transformMatrix != null) {
+						_this6.drawType.transform(_this6.transformMatrix);
+					}
 					_this6.drawType.next();
 					_this6.colorType.cornerColors(color5,color5,color5);
 					var _this7 = _this.pen;
@@ -19375,6 +19680,9 @@ trilateral2_Sketch.prototype = {
 						color6 = _this7.currentColor;
 					}
 					_this7.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.exPrev,_this.eyPrev,0);
+					if(_this7.transformMatrix != null) {
+						_this7.drawType.transform(_this7.transformMatrix);
+					}
 					_this7.drawType.next();
 					_this7.colorType.cornerColors(color6,color6,color6);
 				}
@@ -19396,6 +19704,9 @@ trilateral2_Sketch.prototype = {
 						color7 = _this8.currentColor;
 					}
 					_this8.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+					if(_this8.transformMatrix != null) {
+						_this8.drawType.transform(_this8.transformMatrix);
+					}
 					_this8.drawType.next();
 					_this8.colorType.cornerColors(color7,color7,color7);
 					var _this9 = _this.pen;
@@ -19407,6 +19718,9 @@ trilateral2_Sketch.prototype = {
 						color8 = _this9.currentColor;
 					}
 					_this9.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.exPrev,_this.eyPrev,0);
+					if(_this9.transformMatrix != null) {
+						_this9.drawType.transform(_this9.transformMatrix);
+					}
 					_this9.drawType.next();
 					_this9.colorType.cornerColors(color8,color8,color8);
 				}
@@ -19428,6 +19742,9 @@ trilateral2_Sketch.prototype = {
 						color9 = _this10.currentColor;
 					}
 					_this10.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.jx,_this.jy,0);
+					if(_this10.transformMatrix != null) {
+						_this10.drawType.transform(_this10.transformMatrix);
+					}
 					_this10.drawType.next();
 					_this10.colorType.cornerColors(color9,color9,color9);
 					var _this11 = _this.pen;
@@ -19439,6 +19756,9 @@ trilateral2_Sketch.prototype = {
 						color10 = _this11.currentColor;
 					}
 					_this11.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+					if(_this11.transformMatrix != null) {
+						_this11.drawType.transform(_this11.transformMatrix);
+					}
 					_this11.drawType.next();
 					_this11.colorType.cornerColors(color10,color10,color10);
 				}
@@ -19460,6 +19780,9 @@ trilateral2_Sketch.prototype = {
 						color11 = _this12.currentColor;
 					}
 					_this12.drawType.triangle(_this.jx,_this.jy,0,_this.dx,_this.dy,0,_this.ex,_this.ey,0);
+					if(_this12.transformMatrix != null) {
+						_this12.drawType.transform(_this12.transformMatrix);
+					}
 					_this12.drawType.next();
 					_this12.colorType.cornerColors(color11,color11,color11);
 					var _this13 = _this.pen;
@@ -19471,6 +19794,9 @@ trilateral2_Sketch.prototype = {
 						color12 = _this13.currentColor;
 					}
 					_this13.drawType.triangle(_this.dxPrev,_this.dyPrev,0,_this.jx,_this.jy,0,_this.ex,_this.ey,0);
+					if(_this13.transformMatrix != null) {
+						_this13.drawType.transform(_this13.transformMatrix);
+					}
 					_this13.drawType.next();
 					_this13.colorType.cornerColors(color12,color12,color12);
 				}
@@ -19502,6 +19828,10 @@ trilateral2_Sketch.prototype = {
 					edgePoly[p21++] = cy1;
 					if(i3 != 0) {
 						drawType1.triangle(ax_,ay_,0,bx1,by1,0,cx1,cy1,0);
+						var m1 = trilateral2_Shaper.transformMatrix;
+						if(m1 != null) {
+							drawType1.transform(m1);
+						}
 						drawType1.next();
 					}
 					angle1 += step3;
@@ -19540,6 +19870,10 @@ trilateral2_Sketch.prototype = {
 					edgePoly1[p22++] = cy2;
 					if(i4 != 0) {
 						drawType2.triangle(ax_,ay_,0,bx2,by2,0,cx2,cy2,0);
+						var m2 = trilateral2_Shaper.transformMatrix;
+						if(m2 != null) {
+							drawType2.transform(m2);
+						}
 						drawType2.next();
 					}
 					angle2 += step5;
@@ -19566,6 +19900,9 @@ trilateral2_Sketch.prototype = {
 						color15 = _this16.currentColor;
 					}
 					_this16.drawType.triangle(_this.dxOld,_this.dyOld,0,_this.exPrev,_this.eyPrev,0,_this.ax,_this.ay,0);
+					if(_this16.transformMatrix != null) {
+						_this16.drawType.transform(_this16.transformMatrix);
+					}
 					_this16.drawType.next();
 					_this16.colorType.cornerColors(color15,color15,color15);
 				} else {
@@ -19578,6 +19915,9 @@ trilateral2_Sketch.prototype = {
 						color16 = _this17.currentColor;
 					}
 					_this17.drawType.triangle(_this.exOld,_this.eyOld,0,_this.dxPrev,_this.dyPrev,0,_this.ax,_this.ay,0);
+					if(_this17.transformMatrix != null) {
+						_this17.drawType.transform(_this17.transformMatrix);
+					}
 					_this17.drawType.next();
 					_this17.colorType.cornerColors(color16,color16,color16);
 				}
@@ -19591,6 +19931,9 @@ trilateral2_Sketch.prototype = {
 					color17 = _this18.currentColor;
 				}
 				_this18.drawType.triangle(_this.dxOld,_this.dyOld,0,_this.exPrev,_this.eyPrev,0,_this.jx,_this.jy,0);
+				if(_this18.transformMatrix != null) {
+					_this18.drawType.transform(_this18.transformMatrix);
+				}
 				_this18.drawType.next();
 				_this18.colorType.cornerColors(color17,color17,color17);
 			} else {
@@ -19603,6 +19946,9 @@ trilateral2_Sketch.prototype = {
 					color18 = _this19.currentColor;
 				}
 				_this19.drawType.triangle(_this.exOld,_this.eyOld,0,_this.dxPrev,_this.dyPrev,0,_this.jx,_this.jy,0);
+				if(_this19.transformMatrix != null) {
+					_this19.drawType.transform(_this19.transformMatrix);
+				}
 				_this19.drawType.next();
 				_this19.colorType.cornerColors(color18,color18,color18);
 			}
@@ -19626,6 +19972,9 @@ trilateral2_Sketch.prototype = {
 					color19 = _this20.currentColor;
 				}
 				_this20.drawType.triangle(_this.ax,_this.ay,0,_this.dxOld,_this.dyOld,0,_this.jx,_this.jy,0);
+				if(_this20.transformMatrix != null) {
+					_this20.drawType.transform(_this20.transformMatrix);
+				}
 				_this20.drawType.next();
 				_this20.colorType.cornerColors(color19,color19,color19);
 				var _this21 = _this.pen;
@@ -19637,6 +19986,9 @@ trilateral2_Sketch.prototype = {
 					color20 = _this21.currentColor;
 				}
 				_this21.drawType.triangle(_this.ax,_this.ay,0,_this.exPrev,_this.eyPrev,0,_this.jx,_this.jy,0);
+				if(_this21.transformMatrix != null) {
+					_this21.drawType.transform(_this21.transformMatrix);
+				}
 				_this21.drawType.next();
 				_this21.colorType.cornerColors(color20,color20,color20);
 			} else {
@@ -19649,6 +20001,9 @@ trilateral2_Sketch.prototype = {
 					color21 = _this22.currentColor;
 				}
 				_this22.drawType.triangle(_this.ax,_this.ay,0,_this.exOld,_this.eyOld,0,_this.jx,_this.jy,0);
+				if(_this22.transformMatrix != null) {
+					_this22.drawType.transform(_this22.transformMatrix);
+				}
 				_this22.drawType.next();
 				_this22.colorType.cornerColors(color21,color21,color21);
 				var _this23 = _this.pen;
@@ -19660,6 +20015,9 @@ trilateral2_Sketch.prototype = {
 					color22 = _this23.currentColor;
 				}
 				_this23.drawType.triangle(_this.ax,_this.ay,0,_this.dxPrev,_this.dyPrev,0,_this.jx,_this.jy,0);
+				if(_this23.transformMatrix != null) {
+					_this23.drawType.transform(_this23.transformMatrix);
+				}
 				_this23.drawType.next();
 				_this23.colorType.cornerColors(color22,color22,color22);
 			}
@@ -19816,6 +20174,10 @@ trilateral2_Sketch.prototype = {
 					temp[p2++] = cy;
 					if(i != 0) {
 						drawType.triangle(ax,ay,0,bx,by,0,cx,cy,0);
+						var m = trilateral2_Shaper.transformMatrix;
+						if(m != null) {
+							drawType.transform(m);
+						}
 						drawType.next();
 					}
 					angle += step1;
@@ -20153,11 +20515,9 @@ var trilateral2Setup_Main = function() {
 	var q = new geom_structure_Mat1x4(qDual.x,qDual.y,qDual.z,0.);
 	q = new geom_structure_Mat1x4(q.x * 0.5,q.y * 0.5,q.z * 0.5,q.w * 0.5);
 	this.offset = new geom_structure_DualQ(real,new geom_structure_Mat1x4(q.x * real.w + q.y * real.z - q.z * real.y + q.w * real.x,-q.x * real.z + q.y * real.w + q.z * real.x + q.w * real.y,q.x * real.y - q.y * real.x + q.z * real.w + q.w * real.z,-q.x * real.x - q.y * real.y - q.z * real.z + q.w * real.w));
-	var this1 = new Uint16Array(trilateral2Setup_Main.largeEnough + 4);
+	var this1 = new Int32Array(trilateral2Setup_Main.largeEnough + 2);
 	this1[0] = 0;
 	this1[1] = 0;
-	this1[2] = 0;
-	this1[3] = 0;
 	this.ind = this1;
 	var this11 = new Float32Array(trilateral2Setup_Main.largeEnough + 2);
 	this11[0] = 0.;
@@ -20214,101 +20574,144 @@ trilateral2Setup_Main.prototype = $extend(htmlHelper_webgl_WebGLSetup.prototype,
 		var _e = verts;
 		var _e1 = verts;
 		var _e2 = verts;
-		var _e3 = cols;
+		var _e3 = verts;
+		var _e4 = verts;
+		var _e5 = verts;
+		var _e6 = verts;
+		var _e7 = verts;
+		var _e8 = verts;
+		var _e9 = cols;
 		var tmp = function(colorA,colorB,colorC) {
-			geom_flat_f32__$Float32FlatRGBA_Float32FlatRGBA_$Impl_$.set_red(_e3,(colorA >> 16 & 255) / 255);
+			geom_flat_f32__$Float32FlatRGBA_Float32FlatRGBA_$Impl_$.set_red(_e9,(colorA >> 16 & 255) / 255);
 			var v = (colorA & 255) / 255;
-			_e3[(_e3[0] | 0) * 4 + 2 + 2] = v;
+			_e9[(_e9[0] | 0) * 4 + 2 + 2] = v;
 			var v1 = (colorA >> 8 & 255) / 255;
-			_e3[(_e3[0] | 0) * 4 + 1 + 2] = v1;
+			_e9[(_e9[0] | 0) * 4 + 1 + 2] = v1;
 			var v2 = (colorA >> 24 & 255) / 255;
-			_e3[(_e3[0] | 0) * 4 + 3 + 2] = v2;
-			var pos_ = _e3[0] + 1.;
-			_e3[0] = pos_;
-			if(_e3[0] > _e3[1]) {
-				_e3[1] = _e3[0];
+			_e9[(_e9[0] | 0) * 4 + 3 + 2] = v2;
+			var pos_ = _e9[0] + 1.;
+			_e9[0] = pos_;
+			if(_e9[0] > _e9[1] - 1) {
+				_e9[1] = _e9[0];
 			}
-			geom_flat_f32__$Float32FlatRGBA_Float32FlatRGBA_$Impl_$.set_red(_e3,(colorB >> 16 & 255) / 255);
+			geom_flat_f32__$Float32FlatRGBA_Float32FlatRGBA_$Impl_$.set_red(_e9,(colorB >> 16 & 255) / 255);
 			var v3 = (colorB & 255) / 255;
-			_e3[(_e3[0] | 0) * 4 + 2 + 2] = v3;
+			_e9[(_e9[0] | 0) * 4 + 2 + 2] = v3;
 			var v4 = (colorB >> 8 & 255) / 255;
-			_e3[(_e3[0] | 0) * 4 + 1 + 2] = v4;
+			_e9[(_e9[0] | 0) * 4 + 1 + 2] = v4;
 			var v5 = (colorB >> 24 & 255) / 255;
-			_e3[(_e3[0] | 0) * 4 + 3 + 2] = v5;
-			var pos_1 = _e3[0] + 1.;
-			_e3[0] = pos_1;
-			if(_e3[0] > _e3[1]) {
-				_e3[1] = _e3[0];
+			_e9[(_e9[0] | 0) * 4 + 3 + 2] = v5;
+			var pos_1 = _e9[0] + 1.;
+			_e9[0] = pos_1;
+			if(_e9[0] > _e9[1] - 1) {
+				_e9[1] = _e9[0];
 			}
-			geom_flat_f32__$Float32FlatRGBA_Float32FlatRGBA_$Impl_$.set_red(_e3,(colorC >> 16 & 255) / 255);
+			geom_flat_f32__$Float32FlatRGBA_Float32FlatRGBA_$Impl_$.set_red(_e9,(colorC >> 16 & 255) / 255);
 			var v6 = (colorC & 255) / 255;
-			_e3[(_e3[0] | 0) * 4 + 2 + 2] = v6;
+			_e9[(_e9[0] | 0) * 4 + 2 + 2] = v6;
 			var v7 = (colorC >> 8 & 255) / 255;
-			_e3[(_e3[0] | 0) * 4 + 1 + 2] = v7;
+			_e9[(_e9[0] | 0) * 4 + 1 + 2] = v7;
 			var v8 = (colorC >> 24 & 255) / 255;
-			_e3[(_e3[0] | 0) * 4 + 3 + 2] = v8;
-			var pos_2 = _e3[0] + 1.;
-			_e3[0] = pos_2;
-			if(_e3[0] > _e3[1]) {
-				_e3[1] = _e3[0];
+			_e9[(_e9[0] | 0) * 4 + 3 + 2] = v8;
+			var pos_2 = _e9[0] + 1.;
+			_e9[0] = pos_2;
+			if(_e9[0] > _e9[1] - 1) {
+				_e9[1] = _e9[0];
 			}
 		};
-		var _e4 = cols;
+		var _e10 = cols;
 		var tmp1 = function(color,times) {
 			var _g = 0;
 			var _g1 = times;
 			while(_g < _g1) {
 				var i = _g++;
-				geom_flat_f32__$Float32FlatRGBA_Float32FlatRGBA_$Impl_$.set_red(_e4,(color >> 16 & 255) / 255);
+				geom_flat_f32__$Float32FlatRGBA_Float32FlatRGBA_$Impl_$.set_red(_e10,(color >> 16 & 255) / 255);
 				var v9 = (color & 255) / 255;
-				_e4[(_e4[0] | 0) * 4 + 2 + 2] = v9;
+				_e10[(_e10[0] | 0) * 4 + 2 + 2] = v9;
 				var v10 = (color >> 8 & 255) / 255;
-				_e4[(_e4[0] | 0) * 4 + 1 + 2] = v10;
+				_e10[(_e10[0] | 0) * 4 + 1 + 2] = v10;
 				var v11 = (color >> 24 & 255) / 255;
-				_e4[(_e4[0] | 0) * 4 + 3 + 2] = v11;
-				var pos_3 = _e4[0] + 1.;
-				_e4[0] = pos_3;
-				if(_e4[0] > _e4[1]) {
-					_e4[1] = _e4[0];
+				_e10[(_e10[0] | 0) * 4 + 3 + 2] = v11;
+				var pos_3 = _e10[0] + 1.;
+				_e10[0] = pos_3;
+				if(_e10[0] > _e10[1] - 1) {
+					_e10[1] = _e10[0];
 				}
-				geom_flat_f32__$Float32FlatRGBA_Float32FlatRGBA_$Impl_$.set_red(_e4,(color >> 16 & 255) / 255);
+				geom_flat_f32__$Float32FlatRGBA_Float32FlatRGBA_$Impl_$.set_red(_e10,(color >> 16 & 255) / 255);
 				var v12 = (color & 255) / 255;
-				_e4[(_e4[0] | 0) * 4 + 2 + 2] = v12;
+				_e10[(_e10[0] | 0) * 4 + 2 + 2] = v12;
 				var v13 = (color >> 8 & 255) / 255;
-				_e4[(_e4[0] | 0) * 4 + 1 + 2] = v13;
+				_e10[(_e10[0] | 0) * 4 + 1 + 2] = v13;
 				var v14 = (color >> 24 & 255) / 255;
-				_e4[(_e4[0] | 0) * 4 + 3 + 2] = v14;
-				var pos_4 = _e4[0] + 1.;
-				_e4[0] = pos_4;
-				if(_e4[0] > _e4[1]) {
-					_e4[1] = _e4[0];
+				_e10[(_e10[0] | 0) * 4 + 3 + 2] = v14;
+				var pos_4 = _e10[0] + 1.;
+				_e10[0] = pos_4;
+				if(_e10[0] > _e10[1] - 1) {
+					_e10[1] = _e10[0];
 				}
-				geom_flat_f32__$Float32FlatRGBA_Float32FlatRGBA_$Impl_$.set_red(_e4,(color >> 16 & 255) / 255);
+				geom_flat_f32__$Float32FlatRGBA_Float32FlatRGBA_$Impl_$.set_red(_e10,(color >> 16 & 255) / 255);
 				var v15 = (color & 255) / 255;
-				_e4[(_e4[0] | 0) * 4 + 2 + 2] = v15;
+				_e10[(_e10[0] | 0) * 4 + 2 + 2] = v15;
 				var v16 = (color >> 8 & 255) / 255;
-				_e4[(_e4[0] | 0) * 4 + 1 + 2] = v16;
+				_e10[(_e10[0] | 0) * 4 + 1 + 2] = v16;
 				var v17 = (color >> 24 & 255) / 255;
-				_e4[(_e4[0] | 0) * 4 + 3 + 2] = v17;
-				var pos_5 = _e4[0] + 1.;
-				_e4[0] = pos_5;
-				if(_e4[0] > _e4[1]) {
-					_e4[1] = _e4[0];
+				_e10[(_e10[0] | 0) * 4 + 3 + 2] = v17;
+				var pos_5 = _e10[0] + 1.;
+				_e10[0] = pos_5;
+				if(_e10[0] > _e10[1] - 1) {
+					_e10[1] = _e10[0];
 				}
 			}
 		};
+		var _e11 = verts;
+		var _e12 = verts;
+		var tmp2 = function(pos_6) {
+			_e12[0] = pos_6;
+			if(_e12[0] > _e12[1] - 1) {
+				_e12[1] = _e12[0];
+			}
+			return pos_6;
+		};
+		var _e13 = verts;
+		var tmp3 = function() {
+			return geom_flat_f32__$Float32Flat_Float32Flat_$Impl_$.get_size(_e13);
+		};
+		var _e14 = verts;
+		var tmp4 = function(id) {
+			return geom_flat_f32__$Float32Flat_Float32Flat_$Impl_$.set_size(_e14,id);
+		};
 		this.pen = new trilateral2_Pen({ triangle : function(ax_,ay_,az_,bx_,by_,bz_,cx_,cy_,cz_) {
 			return geom_flat_f32__$Float32FlatTriangle_Float32FlatTriangle_$Impl_$.triangle(_e,ax_,ay_,az_,bx_,by_,bz_,cx_,cy_,cz_);
+		}, transform : function(m) {
+			geom_flat_f32__$Float32FlatTriangle_Float32FlatTriangle_$Impl_$.transform(_e1,m);
+		}, transformRange : function(m1,start,end) {
+			geom_flat_f32__$Float32FlatTriangle_Float32FlatTriangle_$Impl_$.transformRange(_e2,m1,start,end);
 		}, next : function() {
-			var pos_6 = _e1[0] + 1.;
-			_e1[0] = pos_6;
-			if(_e1[0] > _e1[1]) {
-				_e1[1] = _e1[0];
+			var pos_7 = _e3[0] + 1.;
+			_e3[0] = pos_7;
+			if(_e3[0] > _e3[1] - 1) {
+				_e3[1] = _e3[0];
 			}
-			return _e1[0];
+			return _e3[0];
 		}, hasNext : function() {
-			return _e2[0] < (_e2[1] | 0);
-		}, pos : verts[0], length : verts[1] | 0},{ cornerColors : tmp, colorTriangles : tmp1, pos : verts[0], length : verts[1] | 0});
+			return _e4[0] < geom_flat_f32__$Float32Flat_Float32Flat_$Impl_$.get_size(_e4);
+		}, get_pos : function() {
+			return _e5[0];
+		}, set_pos : function(pos_8) {
+			_e6[0] = pos_8;
+			if(_e6[0] > _e6[1] - 1) {
+				_e6[1] = _e6[0];
+			}
+			return pos_8;
+		}, get_size : function() {
+			return geom_flat_f32__$Float32Flat_Float32Flat_$Impl_$.get_size(_e7);
+		}, set_size : function(id1) {
+			return geom_flat_f32__$Float32Flat_Float32Flat_$Impl_$.set_size(_e8,id1);
+		}},{ cornerColors : tmp, colorTriangles : tmp1, get_pos : function() {
+			return _e11[0];
+		}, set_pos : tmp2, get_size : tmp3, set_size : tmp4});
+		this.pen.transformMatrix = this.scaleToGL();
+		trilateral2_Shaper.transformMatrix = this.scaleToGL();
 	}
 	,shaderAssign: function() {
 		var vertexShader = "";
@@ -20337,15 +20740,15 @@ trilateral2Setup_Main.prototype = $extend(htmlHelper_webgl_WebGLSetup.prototype,
 		var this1 = this.textPos;
 		var tri = this.verts;
 		this1[0] = 0;
-		if(this1[0] > this1[1]) {
+		if(this1[0] > this1[1] - 1) {
 			this1[1] = this1[0];
 		}
 		tri[0] = 0;
-		if(tri[0] > tri[1]) {
+		if(tri[0] > tri[1] - 1) {
 			tri[1] = tri[0];
 		}
 		var _g = 0;
-		var _g1 = tri[1] | 0;
+		var _g1 = geom_flat_f32__$Float32Flat_Float32Flat_$Impl_$.get_size(tri);
 		while(_g < _g1) {
 			var i = _g++;
 			geom_flat_f32__$Float32FlatTriangleXY_Float32FlatTriangleXY_$Impl_$.set_ax(this1,geom_flat_f32__$Float32FlatTriangle_Float32FlatTriangle_$Impl_$.get_ax(tri));
@@ -20358,7 +20761,7 @@ trilateral2Setup_Main.prototype = $extend(htmlHelper_webgl_WebGLSetup.prototype,
 				return function() {
 					var pos_ = _e[0][0] + 1.;
 					_e[0][0] = pos_;
-					if(_e[0][0] > _e[0][1]) {
+					if(_e[0][0] > _e[0][1] - 1) {
 						_e[0][1] = _e[0][0];
 					}
 					return _e[0][0];
@@ -20366,11 +20769,10 @@ trilateral2Setup_Main.prototype = $extend(htmlHelper_webgl_WebGLSetup.prototype,
 			})([tri]);
 			var pos_1 = this1[0] + 1.;
 			this1[0] = pos_1;
-			if(this1[0] > this1[1]) {
+			if(this1[0] > this1[1] - 1) {
 				this1[1] = this1[0];
 			}
 		}
-		this.transformVerticesToGL();
 		this.transformTexturePos();
 		this.uploadVectors();
 		if(htmlHelper_tools_AnimateTimer.s == null) {
@@ -20382,21 +20784,18 @@ trilateral2Setup_Main.prototype = $extend(htmlHelper_webgl_WebGLSetup.prototype,
 		}
 		htmlHelper_tools_AnimateTimer.onFrame = $bind(this,this.render_);
 	}
-	,transformVerticesToGL: function() {
-		geom_flat_f32__$Float32FlatTriangle_Float32FlatTriangle_$Impl_$.transformAll(this.verts,this.scaleToGL());
-	}
 	,scaleToGL: function() {
 		this.scale = 0.00166666666666666677;
-		var this1 = new geom_structure_Mat1x4(this.scale,-this.scale,1.,1.);
-		var p = this1;
+		var this1 = new geom_structure_Mat1x4(this.scale,-this.scale,this.scale,1.);
+		var v = this1;
 		var this2 = new geom_structure_Mat4x3(1.,0.,0.,0.,0.,1.,0.,0.,0.,0.,1.,0.);
 		var this3 = this2;
 		var this4 = new geom_structure_Mat4x3(1.,0.,0.,-1.,0.,1.,0.,1.,0.,0.,1.,0.);
 		var s = this4;
 		var this5 = new geom_structure_Mat4x3(this3.a * s.a + this3.b * s.e + this3.c * s.i,this3.a * s.b + this3.b * s.f + this3.c * s.j,this3.a * s.c + this3.b * s.g + this3.c * s.k,this3.a * s.d + this3.b * s.h + this3.c * s.l + this3.d,this3.e * s.a + this3.f * s.e + this3.g * s.i,this3.e * s.b + this3.f * s.f + this3.g * s.j,this3.e * s.c + this3.f * s.g + this3.g * s.k,this3.e * s.d + this3.f * s.h + this3.g * s.l + this3.h,this3.i * s.a + this3.j * s.e + this3.k * s.i,this3.i * s.b + this3.j * s.f + this3.k * s.j,this3.i * s.c + this3.j * s.g + this3.k * s.k,this3.i * s.d + this3.j * s.h + this3.k * s.l + this3.l);
-		var m = this5;
-		var this6 = new geom_structure_Mat4x3(m.a * p.x,m.b,m.c,m.d,m.e,m.f * p.y,m.g,m.h,m.i,m.j,m.k * p.z,m.l);
-		return this6;
+		var this6 = this5;
+		var this7 = new geom_structure_Mat4x3(this6.a * v.x,this6.b,this6.c,this6.d,this6.e,this6.f * v.y,this6.g,this6.h,this6.i,this6.j,this6.k * v.z,this6.l);
+		return this7;
 	}
 	,transformTexturePos: function() {
 		geom_flat_f32__$Float32FlatTriangleXY_Float32FlatTriangleXY_$Impl_$.transformAll(this.textPos,this.scaleTexture());
@@ -20404,23 +20803,23 @@ trilateral2Setup_Main.prototype = $extend(htmlHelper_webgl_WebGLSetup.prototype,
 	,scaleTexture: function() {
 		this.scale = 0.00166666666666666677;
 		var this1 = new geom_structure_Mat1x4(this.scale * 2,this.scale * 2,1.,1.);
-		var p = this1;
+		var v = this1;
 		var this2 = new geom_structure_Mat4x3(1.,0.,0.,0.,0.,1.,0.,0.,0.,0.,1.,0.);
 		var this3 = this2;
 		var this4 = new geom_structure_Mat4x3(1.,0.,0.,.5,0.,1.,0.,.5,0.,0.,1.,0.);
 		var s = this4;
 		var this5 = new geom_structure_Mat4x3(this3.a * s.a + this3.b * s.e + this3.c * s.i,this3.a * s.b + this3.b * s.f + this3.c * s.j,this3.a * s.c + this3.b * s.g + this3.c * s.k,this3.a * s.d + this3.b * s.h + this3.c * s.l + this3.d,this3.e * s.a + this3.f * s.e + this3.g * s.i,this3.e * s.b + this3.f * s.f + this3.g * s.j,this3.e * s.c + this3.f * s.g + this3.g * s.k,this3.e * s.d + this3.f * s.h + this3.g * s.l + this3.h,this3.i * s.a + this3.j * s.e + this3.k * s.i,this3.i * s.b + this3.j * s.f + this3.k * s.j,this3.i * s.c + this3.j * s.g + this3.k * s.k,this3.i * s.d + this3.j * s.h + this3.k * s.l + this3.l);
-		var m = this5;
-		var this6 = new geom_structure_Mat4x3(m.a * p.x,m.b,m.c,m.d,m.e,m.f * p.y,m.g,m.h,m.i,m.j,m.k * p.z,m.l);
-		return this6;
+		var this6 = this5;
+		var this7 = new geom_structure_Mat4x3(this6.a * v.x,this6.b,this6.c,this6.d,this6.e,this6.f * v.y,this6.g,this6.h,this6.i,this6.j,this6.k * v.z,this6.l);
+		return this7;
 	}
 	,uploadVectors: function() {
 		var this1 = this.verts;
-		this.vertices = this1.subarray(2,(this1[1] | 0) * 9 + 2);
+		this.vertices = this1.subarray(2,geom_flat_f32__$Float32Flat_Float32Flat_$Impl_$.get_size(this1) * 9 + 2);
 		var this2 = this.cols;
-		this.colors = this2.subarray(2,(this2[1] | 0) * 4 + 2);
+		this.colors = this2.subarray(2,geom_flat_f32__$Float32Flat_Float32Flat_$Impl_$.get_size(this2) * 4 + 2);
 		var this3 = this.textPos;
-		var texs = this3.subarray(2,(this3[1] | 0) * 6 + 2);
+		var texs = this3.subarray(2,geom_flat_f32__$Float32Flat_Float32Flat_$Impl_$.get_size(this3) * 6 + 2);
 		this.indices = this.createIndices();
 		var this4 = new Float32Array(1000002);
 		var this5 = this4;
@@ -20519,37 +20918,31 @@ trilateral2Setup_Main.prototype = $extend(htmlHelper_webgl_WebGLSetup.prototype,
 	,createIndices: function() {
 		var this1 = this.ind;
 		this1[0] = 0;
-		this1[1] = 0;
-		if(0 > (this1[2] << 16) + this1[3]) {
-			var v = 1;
-			this1[2] = v >>> 16;
-			this1[3] = v & 65535;
+		if(this1[0] > this1[1] - 1) {
+			this1[1] = this1[0];
 		}
 		var _g = 0;
-		var _g1 = this.verts[1] | 0;
+		var _g1 = geom_flat_f32__$Float32Flat_Float32Flat_$Impl_$.get_size(this.verts);
 		while(_g < _g1) {
 			var i = _g++;
 			var this2 = this.ind;
-			var v1 = i * 3;
-			this2[((this2[0] << 16) + this2[1]) * 3 + 0 + 4] = v1;
+			var v = i * 3;
+			this2[this2[0] * 3 + 2] = v;
 			var this3 = this.ind;
-			var v2 = i * 3 + 1;
-			this3[((this3[0] << 16) + this3[1]) * 3 + 1 + 4] = v2;
+			var v1 = i * 3 + 1;
+			this3[this3[0] * 3 + 1 + 2] = v1;
 			var this4 = this.ind;
-			var v3 = i * 3 + 2;
-			this4[((this4[0] << 16) + this4[1]) * 3 + 2 + 4] = v3;
+			var v2 = i * 3 + 2;
+			this4[this4[0] * 3 + 2 + 2] = v2;
 			var this5 = this.ind;
-			var pos_ = (this5[0] << 16) + this5[1] + 1;
-			this5[0] = pos_ >>> 16;
-			this5[1] = pos_ & 65535;
-			if(pos_ > (this5[2] << 16) + this5[3]) {
-				var v4 = pos_ + 1;
-				this5[2] = v4 >>> 16;
-				this5[3] = v4 & 65535;
+			var pos_ = this5[0] + 1;
+			this5[0] = pos_;
+			if(this5[0] > this5[1] - 1) {
+				this5[1] = this5[0];
 			}
 		}
 		var this6 = this.ind;
-		var arr = this6.subarray(4,((this6[2] << 16) + this6[3]) * 3 + 4);
+		var arr = this6.subarray(2,this6[1] * 3 + 2);
 		return arr;
 	}
 	,darkBackground: function() {
@@ -20565,7 +20958,8 @@ trilateral2Setup_Main.prototype = $extend(htmlHelper_webgl_WebGLSetup.prototype,
 		if(this.backgroundSquare) {
 			new trilateral2Setup_drawings_BorderRed(this.pen,layoutPos);
 		}
-		this.gridLines(10,60226547,-258540557);
+		var gridLines = new trilateral2Setup_drawings_GridLines(this.pen,600);
+		gridLines.draw(10,60226304,-258540557);
 		new trilateral2Setup_drawings_GreenSquare(this.pen,layoutPos);
 		new trilateral2Setup_drawings_OrangeDavidStar(this.pen,layoutPos);
 		new trilateral2Setup_drawings_IndigoCircle(this.pen,layoutPos);
@@ -20596,6 +20990,9 @@ trilateral2Setup_Main.prototype = $extend(htmlHelper_webgl_WebGLSetup.prototype,
 			color = _this.currentColor;
 		}
 		_this.drawType.triangle(a_x,a_y,0,b_x,b_y,0,d_x,d_y,0);
+		if(_this.transformMatrix != null) {
+			_this.drawType.transform(_this.transformMatrix);
+		}
 		_this.drawType.next();
 		_this.colorType.cornerColors(color,color,color);
 		var _this1 = this.pen;
@@ -20604,94 +21001,11 @@ trilateral2Setup_Main.prototype = $extend(htmlHelper_webgl_WebGLSetup.prototype,
 			color1 = _this1.currentColor;
 		}
 		_this1.drawType.triangle(b_x,b_y,0,d_x,d_y,0,c_x,c_y,0);
+		if(_this1.transformMatrix != null) {
+			_this1.drawType.transform(_this1.transformMatrix);
+		}
 		_this1.drawType.next();
 		_this1.colorType.cornerColors(color1,color1,color1);
-	}
-	,gridLines: function(spacing,colorA,colorB) {
-		var gap = 15;
-		var len = Math.ceil((1200 - 2 * gap) / spacing);
-		this.pen.currentColor = colorB;
-		var sketch = new trilateral2_Sketch(this.pen,trilateral2_SketchForm.Crude,3);
-		sketch.width = spacing / 4;
-		var delta = 0.;
-		sketch.moveTo(0,0);
-		var _g = 1;
-		var _g1 = len;
-		while(_g < _g1) {
-			var i = _g++;
-			var delta1 = i * spacing;
-			if(i % 10 == 0) {
-				this.pen.currentColor = colorA;
-			} else {
-				this.pen.currentColor = colorB;
-			}
-			sketch.moveTo(gap,delta1 + gap);
-			var x_ = 1200 - gap;
-			var y_ = delta1 + gap;
-			var repeat = sketch.x == x_ && sketch.y == y_;
-			if(!repeat) {
-				if(sketch.widthFunction != null) {
-					sketch.width = sketch.widthFunction(sketch.width,sketch.x,sketch.y,x_,y_);
-				}
-				if(sketch.colourFunction != null) {
-					sketch.pen.currentColor = sketch.colourFunction(sketch.pen.currentColor,sketch.x,sketch.y,x_,y_);
-				}
-				sketch.line(x_,y_);
-				var l = sketch.points.length;
-				var p = sketch.points[l - 1];
-				var l2 = p.length;
-				p[l2] = x_;
-				p[l2 + 1] = y_;
-				var d = sketch.dim[sketch.dim.length - 1];
-				if(x_ < d.minX) {
-					d.minX = x_;
-				}
-				if(x_ > d.maxX) {
-					d.maxX = x_;
-				}
-				if(y_ < d.minY) {
-					d.minY = y_;
-				}
-				if(y_ > d.maxY) {
-					d.maxY = y_;
-				}
-				sketch.x = x_;
-				sketch.y = y_;
-			}
-			sketch.moveTo(delta1 + gap,gap);
-			var x_1 = delta1 + gap;
-			var y_1 = 1200 - gap;
-			var repeat1 = sketch.x == x_1 && sketch.y == y_1;
-			if(!repeat1) {
-				if(sketch.widthFunction != null) {
-					sketch.width = sketch.widthFunction(sketch.width,sketch.x,sketch.y,x_1,y_1);
-				}
-				if(sketch.colourFunction != null) {
-					sketch.pen.currentColor = sketch.colourFunction(sketch.pen.currentColor,sketch.x,sketch.y,x_1,y_1);
-				}
-				sketch.line(x_1,y_1);
-				var l1 = sketch.points.length;
-				var p1 = sketch.points[l1 - 1];
-				var l21 = p1.length;
-				p1[l21] = x_1;
-				p1[l21 + 1] = y_1;
-				var d1 = sketch.dim[sketch.dim.length - 1];
-				if(x_1 < d1.minX) {
-					d1.minX = x_1;
-				}
-				if(x_1 > d1.maxX) {
-					d1.maxX = x_1;
-				}
-				if(y_1 < d1.minY) {
-					d1.minY = y_1;
-				}
-				if(y_1 > d1.maxY) {
-					d1.maxY = y_1;
-				}
-				sketch.x = x_1;
-				sketch.y = y_1;
-			}
-		}
 	}
 	,render_: function(i) {
 		this.model = this.axisModel.updateCalculate(this.model);
@@ -20834,8 +21148,16 @@ trilateral2Setup_drawings_BlueRectangle.prototype = $extend(trilateral2Setup_dra
 		var dx = x;
 		var dy = cy;
 		drawType.triangle(ax,ay,0,bx,by,0,dx,dy,0);
+		var m = trilateral2_Shaper.transformMatrix;
+		if(m != null) {
+			drawType.transform(m);
+		}
 		drawType.next();
 		drawType.triangle(bx,by,0,cx,cy,0,dx,dy,0);
+		var m1 = trilateral2_Shaper.transformMatrix;
+		if(m1 != null) {
+			drawType.transform(m1);
+		}
 		drawType.next();
 		var len = 2;
 		var _this = this.pen;
@@ -20895,20 +21217,52 @@ trilateral2Setup_drawings_BorderRed.prototype = $extend(trilateral2Setup_drawing
 		d0x = a0x;
 		d0y = c0y;
 		drawType.triangle(ax,ay,0,bx,by,0,a0x,a0y,0);
+		var m = trilateral2_Shaper.transformMatrix;
+		if(m != null) {
+			drawType.transform(m);
+		}
 		drawType.next();
 		drawType.triangle(bx,by,0,b0x,b0y,0,a0x,a0y,0);
+		var m1 = trilateral2_Shaper.transformMatrix;
+		if(m1 != null) {
+			drawType.transform(m1);
+		}
 		drawType.next();
 		drawType.triangle(d0x,d0y,0,c0x,c0y,0,dx,dy,0);
+		var m2 = trilateral2_Shaper.transformMatrix;
+		if(m2 != null) {
+			drawType.transform(m2);
+		}
 		drawType.next();
 		drawType.triangle(c0x,c0y,0,cx,cy,0,dx,dy,0);
+		var m3 = trilateral2_Shaper.transformMatrix;
+		if(m3 != null) {
+			drawType.transform(m3);
+		}
 		drawType.next();
 		drawType.triangle(ax,ay,0,a0x,a0y,0,d0x,d0y,0);
+		var m4 = trilateral2_Shaper.transformMatrix;
+		if(m4 != null) {
+			drawType.transform(m4);
+		}
 		drawType.next();
 		drawType.triangle(ax,ay,0,d0x,d0y,0,dx,dy,0);
+		var m5 = trilateral2_Shaper.transformMatrix;
+		if(m5 != null) {
+			drawType.transform(m5);
+		}
 		drawType.next();
 		drawType.triangle(b0x,b0y,0,bx,by,0,c0x,c0y,0);
+		var m6 = trilateral2_Shaper.transformMatrix;
+		if(m6 != null) {
+			drawType.transform(m6);
+		}
 		drawType.next();
 		drawType.triangle(bx,by,0,cx,cy,0,c0x,c0y,0);
+		var m7 = trilateral2_Shaper.transformMatrix;
+		if(m7 != null) {
+			drawType.transform(m7);
+		}
 		drawType.next();
 		var len = 8;
 		var _this = this.pen;
@@ -20969,8 +21323,16 @@ trilateral2Setup_drawings_GreenSquare.prototype = $extend(trilateral2Setup_drawi
 		dx = ax;
 		dy = cy;
 		drawType.triangle(ax,ay,0,bx,by,0,dx,dy,0);
+		var m = trilateral2_Shaper.transformMatrix;
+		if(m != null) {
+			drawType.transform(m);
+		}
 		drawType.next();
 		drawType.triangle(bx,by,0,cx,cy,0,dx,dy,0);
+		var m1 = trilateral2_Shaper.transformMatrix;
+		if(m1 != null) {
+			drawType.transform(m1);
+		}
 		drawType.next();
 		var len = 2;
 		var _this = this.pen;
@@ -20982,6 +21344,100 @@ trilateral2Setup_drawings_GreenSquare.prototype = $extend(trilateral2Setup_drawi
 	}
 	,__class__: trilateral2Setup_drawings_GreenSquare
 });
+var trilateral2Setup_drawings_GridLines = function(pen,stageRadius) {
+	this.pen = pen;
+	this.stageRadius = stageRadius;
+};
+trilateral2Setup_drawings_GridLines.__name__ = true;
+trilateral2Setup_drawings_GridLines.prototype = {
+	draw: function(spacing,colorA,colorB) {
+		var gap = 15;
+		var len = Math.ceil((this.stageRadius * 2 - 2 * gap) / spacing);
+		this.pen.currentColor = colorB;
+		var sketch = new trilateral2_Sketch(this.pen,trilateral2_SketchForm.Crude,3);
+		sketch.width = spacing / 4;
+		var delta = 0.;
+		sketch.moveTo(0,0);
+		var _g = 1;
+		var _g1 = len;
+		while(_g < _g1) {
+			var i = _g++;
+			var delta1 = i * spacing;
+			if(i % 10 == 0) {
+				this.pen.currentColor = colorA;
+			} else {
+				this.pen.currentColor = colorB;
+			}
+			sketch.moveTo(gap,delta1 + gap);
+			var x_ = this.stageRadius * 2 - gap;
+			var y_ = delta1 + gap;
+			var repeat = sketch.x == x_ && sketch.y == y_;
+			if(!repeat) {
+				if(sketch.widthFunction != null) {
+					sketch.width = sketch.widthFunction(sketch.width,sketch.x,sketch.y,x_,y_);
+				}
+				if(sketch.colourFunction != null) {
+					sketch.pen.currentColor = sketch.colourFunction(sketch.pen.currentColor,sketch.x,sketch.y,x_,y_);
+				}
+				sketch.line(x_,y_);
+				var l = sketch.points.length;
+				var p = sketch.points[l - 1];
+				var l2 = p.length;
+				p[l2] = x_;
+				p[l2 + 1] = y_;
+				var d = sketch.dim[sketch.dim.length - 1];
+				if(x_ < d.minX) {
+					d.minX = x_;
+				}
+				if(x_ > d.maxX) {
+					d.maxX = x_;
+				}
+				if(y_ < d.minY) {
+					d.minY = y_;
+				}
+				if(y_ > d.maxY) {
+					d.maxY = y_;
+				}
+				sketch.x = x_;
+				sketch.y = y_;
+			}
+			sketch.moveTo(delta1 + gap,gap);
+			var x_1 = delta1 + gap;
+			var y_1 = this.stageRadius * 2 - gap;
+			var repeat1 = sketch.x == x_1 && sketch.y == y_1;
+			if(!repeat1) {
+				if(sketch.widthFunction != null) {
+					sketch.width = sketch.widthFunction(sketch.width,sketch.x,sketch.y,x_1,y_1);
+				}
+				if(sketch.colourFunction != null) {
+					sketch.pen.currentColor = sketch.colourFunction(sketch.pen.currentColor,sketch.x,sketch.y,x_1,y_1);
+				}
+				sketch.line(x_1,y_1);
+				var l1 = sketch.points.length;
+				var p1 = sketch.points[l1 - 1];
+				var l21 = p1.length;
+				p1[l21] = x_1;
+				p1[l21 + 1] = y_1;
+				var d1 = sketch.dim[sketch.dim.length - 1];
+				if(x_1 < d1.minX) {
+					d1.minX = x_1;
+				}
+				if(x_1 > d1.maxX) {
+					d1.maxX = x_1;
+				}
+				if(y_1 < d1.minY) {
+					d1.minY = y_1;
+				}
+				if(y_1 > d1.maxY) {
+					d1.maxY = y_1;
+				}
+				sketch.x = x_1;
+				sketch.y = y_1;
+			}
+		}
+	}
+	,__class__: trilateral2Setup_drawings_GridLines
+};
 var trilateral2Setup_drawings_IndigoCircle = function(pen,layoutPos) {
 	trilateral2Setup_drawings_DrawingLayout.call(this,pen,layoutPos);
 };
@@ -21010,6 +21466,10 @@ trilateral2Setup_drawings_IndigoCircle.prototype = $extend(trilateral2Setup_draw
 			cx = ax + radius * Math.sin(theta);
 			cy = ay + radius * Math.cos(theta);
 			drawType.triangle(ax,ay,0,bx,by,0,cx,cy,0);
+			var m = trilateral2_Shaper.transformMatrix;
+			if(m != null) {
+				drawType.transform(m);
+			}
 			drawType.next();
 		}
 		var len = 36;
@@ -21071,20 +21531,52 @@ trilateral2Setup_drawings_MidGreySquareOutline.prototype = $extend(trilateral2Se
 		d0x = a0x;
 		d0y = c0y;
 		drawType.triangle(ax,ay,0,bx,by,0,a0x,a0y,0);
+		var m = trilateral2_Shaper.transformMatrix;
+		if(m != null) {
+			drawType.transform(m);
+		}
 		drawType.next();
 		drawType.triangle(bx,by,0,b0x,b0y,0,a0x,a0y,0);
+		var m1 = trilateral2_Shaper.transformMatrix;
+		if(m1 != null) {
+			drawType.transform(m1);
+		}
 		drawType.next();
 		drawType.triangle(d0x,d0y,0,c0x,c0y,0,dx,dy,0);
+		var m2 = trilateral2_Shaper.transformMatrix;
+		if(m2 != null) {
+			drawType.transform(m2);
+		}
 		drawType.next();
 		drawType.triangle(c0x,c0y,0,cx,cy,0,dx,dy,0);
+		var m3 = trilateral2_Shaper.transformMatrix;
+		if(m3 != null) {
+			drawType.transform(m3);
+		}
 		drawType.next();
 		drawType.triangle(ax,ay,0,a0x,a0y,0,d0x,d0y,0);
+		var m4 = trilateral2_Shaper.transformMatrix;
+		if(m4 != null) {
+			drawType.transform(m4);
+		}
 		drawType.next();
 		drawType.triangle(ax,ay,0,d0x,d0y,0,dx,dy,0);
+		var m5 = trilateral2_Shaper.transformMatrix;
+		if(m5 != null) {
+			drawType.transform(m5);
+		}
 		drawType.next();
 		drawType.triangle(b0x,b0y,0,bx,by,0,c0x,c0y,0);
+		var m6 = trilateral2_Shaper.transformMatrix;
+		if(m6 != null) {
+			drawType.transform(m6);
+		}
 		drawType.next();
 		drawType.triangle(bx,by,0,cx,cy,0,c0x,c0y,0);
+		var m7 = trilateral2_Shaper.transformMatrix;
+		if(m7 != null) {
+			drawType.transform(m7);
+		}
 		drawType.next();
 		var len = 8;
 		var _this = this.pen;
@@ -21127,8 +21619,16 @@ trilateral2Setup_drawings_OrangeDavidStar.prototype = $extend(trilateral2Setup_d
 		var c1x = px + radius * Math.sin(omega);
 		var c1y = py + radius * Math.cos(omega);
 		drawType.triangle(a0x,a0y,0,b0x,b0y,0,c0x,c0y,0);
+		var m = trilateral2_Shaper.transformMatrix;
+		if(m != null) {
+			drawType.transform(m);
+		}
 		drawType.next();
 		drawType.triangle(a1x,a1y,0,b1x,b1y,0,c1x,c1y,0);
+		var m1 = trilateral2_Shaper.transformMatrix;
+		if(m1 != null) {
+			drawType.transform(m1);
+		}
 		drawType.next();
 		var len = 2;
 		var _this = this.pen;
@@ -21191,8 +21691,16 @@ trilateral2Setup_drawings_RedRoundedRectangleOutline.prototype = $extend(trilate
 		var dx1 = ax;
 		var dy1 = cy1;
 		drawType.triangle(ax1,ay1,0,bx1,by1,0,dx1,dy1,0);
+		var m = trilateral2_Shaper.transformMatrix;
+		if(m != null) {
+			drawType.transform(m);
+		}
 		drawType.next();
 		drawType.triangle(bx1,by1,0,cx1,cy1,0,dx1,dy1,0);
+		var m1 = trilateral2_Shaper.transformMatrix;
+		if(m1 != null) {
+			drawType.transform(m1);
+		}
 		drawType.next();
 		count += 2;
 		var ax2 = ax;
@@ -21204,8 +21712,16 @@ trilateral2Setup_drawings_RedRoundedRectangleOutline.prototype = $extend(trilate
 		var dx2 = ax;
 		var dy2 = cy2;
 		drawType.triangle(ax2,ay2,0,bx2,by2,0,dx2,dy2,0);
+		var m2 = trilateral2_Shaper.transformMatrix;
+		if(m2 != null) {
+			drawType.transform(m2);
+		}
 		drawType.next();
 		drawType.triangle(bx2,by2,0,cx2,cy2,0,dx2,dy2,0);
+		var m3 = trilateral2_Shaper.transformMatrix;
+		if(m3 != null) {
+			drawType.transform(m3);
+		}
 		drawType.next();
 		count += 2;
 		var dimY = height - 60;
@@ -21218,8 +21734,16 @@ trilateral2Setup_drawings_RedRoundedRectangleOutline.prototype = $extend(trilate
 		var dx3 = x;
 		var dy3 = cy3;
 		drawType.triangle(ax3,ay3,0,bx3,by3,0,dx3,dy3,0);
+		var m4 = trilateral2_Shaper.transformMatrix;
+		if(m4 != null) {
+			drawType.transform(m4);
+		}
 		drawType.next();
 		drawType.triangle(bx3,by3,0,cx3,cy3,0,dx3,dy3,0);
+		var m5 = trilateral2_Shaper.transformMatrix;
+		if(m5 != null) {
+			drawType.transform(m5);
+		}
 		drawType.next();
 		count += 2;
 		var x1 = x + width - 6;
@@ -21232,8 +21756,16 @@ trilateral2Setup_drawings_RedRoundedRectangleOutline.prototype = $extend(trilate
 		var dx4 = x1;
 		var dy4 = cy4;
 		drawType.triangle(ax4,ay4,0,bx4,by4,0,dx4,dy4,0);
+		var m6 = trilateral2_Shaper.transformMatrix;
+		if(m6 != null) {
+			drawType.transform(m6);
+		}
 		drawType.next();
 		drawType.triangle(bx4,by4,0,cx4,cy4,0,dx4,dy4,0);
+		var m7 = trilateral2_Shaper.transformMatrix;
+		if(m7 != null) {
+			drawType.transform(m7);
+		}
 		drawType.next();
 		count += 2;
 		var beta = -pi;
@@ -21372,8 +21904,16 @@ trilateral2Setup_drawings_RedRoundedRectangleOutline.prototype = $extend(trilate
 			ey = ay + r2 * Math.cos(angle);
 			if(i != 0) {
 				drawType.triangle(dx5,dy5,0,bx5,by5,0,cx5,cy5,0);
+				var m8 = trilateral2_Shaper.transformMatrix;
+				if(m8 != null) {
+					drawType.transform(m8);
+				}
 				drawType.next();
 				drawType.triangle(dx5,dy5,0,cx5,cy5,0,ex,ey,0);
+				var m9 = trilateral2_Shaper.transformMatrix;
+				if(m9 != null) {
+					drawType.transform(m9);
+				}
 				drawType.next();
 			}
 			angle += step1;
@@ -21517,8 +22057,16 @@ trilateral2Setup_drawings_RedRoundedRectangleOutline.prototype = $extend(trilate
 			ey1 = by + r21 * Math.cos(angle1);
 			if(i1 != 0) {
 				drawType.triangle(dx6,dy6,0,bx6,by6,0,cx6,cy6,0);
+				var m10 = trilateral2_Shaper.transformMatrix;
+				if(m10 != null) {
+					drawType.transform(m10);
+				}
 				drawType.next();
 				drawType.triangle(dx6,dy6,0,cx6,cy6,0,ex1,ey1,0);
+				var m11 = trilateral2_Shaper.transformMatrix;
+				if(m11 != null) {
+					drawType.transform(m11);
+				}
 				drawType.next();
 			}
 			angle1 += step3;
@@ -21662,8 +22210,16 @@ trilateral2Setup_drawings_RedRoundedRectangleOutline.prototype = $extend(trilate
 			ey2 = cy + r22 * Math.cos(angle2);
 			if(i2 != 0) {
 				drawType.triangle(dx7,dy7,0,bx7,by7,0,cx7,cy7,0);
+				var m12 = trilateral2_Shaper.transformMatrix;
+				if(m12 != null) {
+					drawType.transform(m12);
+				}
 				drawType.next();
 				drawType.triangle(dx7,dy7,0,cx7,cy7,0,ex2,ey2,0);
+				var m13 = trilateral2_Shaper.transformMatrix;
+				if(m13 != null) {
+					drawType.transform(m13);
+				}
 				drawType.next();
 			}
 			angle2 += step5;
@@ -21808,8 +22364,16 @@ trilateral2Setup_drawings_RedRoundedRectangleOutline.prototype = $extend(trilate
 			ey3 = dy + r23 * Math.cos(angle3);
 			if(i3 != 0) {
 				drawType.triangle(dx8,dy8,0,bx8,by8,0,cx8,cy8,0);
+				var m14 = trilateral2_Shaper.transformMatrix;
+				if(m14 != null) {
+					drawType.transform(m14);
+				}
 				drawType.next();
 				drawType.triangle(dx8,dy8,0,cx8,cy8,0,ex3,ey3,0);
+				var m15 = trilateral2_Shaper.transformMatrix;
+				if(m15 != null) {
+					drawType.transform(m15);
+				}
 				drawType.next();
 			}
 			angle3 += step7;
@@ -21860,8 +22424,16 @@ trilateral2Setup_drawings_VioletRoundedRectangle.prototype = $extend(trilateral2
 		var dx1 = ax;
 		var dy1 = cy1;
 		drawType.triangle(ax1,ay1,0,bx1,by1,0,dx1,dy1,0);
+		var m = trilateral2_Shaper.transformMatrix;
+		if(m != null) {
+			drawType.transform(m);
+		}
 		drawType.next();
 		drawType.triangle(bx1,by1,0,cx1,cy1,0,dx1,dy1,0);
+		var m1 = trilateral2_Shaper.transformMatrix;
+		if(m1 != null) {
+			drawType.transform(m1);
+		}
 		drawType.next();
 		count += 2;
 		var dimY = height - 60;
@@ -21874,8 +22446,16 @@ trilateral2Setup_drawings_VioletRoundedRectangle.prototype = $extend(trilateral2
 		var dx2 = x;
 		var dy2 = cy2;
 		drawType.triangle(ax2,ay2,0,bx2,by2,0,dx2,dy2,0);
+		var m2 = trilateral2_Shaper.transformMatrix;
+		if(m2 != null) {
+			drawType.transform(m2);
+		}
 		drawType.next();
 		drawType.triangle(bx2,by2,0,cx2,cy2,0,dx2,dy2,0);
+		var m3 = trilateral2_Shaper.transformMatrix;
+		if(m3 != null) {
+			drawType.transform(m3);
+		}
 		drawType.next();
 		count += 2;
 		var ax3 = bx;
@@ -21887,8 +22467,16 @@ trilateral2Setup_drawings_VioletRoundedRectangle.prototype = $extend(trilateral2
 		var dx3 = bx;
 		var dy3 = cy3;
 		drawType.triangle(ax3,ay3,0,bx3,by3,0,dx3,dy3,0);
+		var m4 = trilateral2_Shaper.transformMatrix;
+		if(m4 != null) {
+			drawType.transform(m4);
+		}
 		drawType.next();
 		drawType.triangle(bx3,by3,0,cx3,cy3,0,dx3,dy3,0);
+		var m5 = trilateral2_Shaper.transformMatrix;
+		if(m5 != null) {
+			drawType.transform(m5);
+		}
 		drawType.next();
 		count += 2;
 		var beta = -pi;
@@ -22020,6 +22608,10 @@ trilateral2Setup_drawings_VioletRoundedRectangle.prototype = $extend(trilateral2
 			cy4 = ay + 30 * Math.cos(angle);
 			if(i != 0) {
 				drawType.triangle(ax,ay,0,bx4,by4,0,cx4,cy4,0);
+				var m6 = trilateral2_Shaper.transformMatrix;
+				if(m6 != null) {
+					drawType.transform(m6);
+				}
 				drawType.next();
 			}
 			angle += step1;
@@ -22154,6 +22746,10 @@ trilateral2Setup_drawings_VioletRoundedRectangle.prototype = $extend(trilateral2
 			cy5 = by + 30 * Math.cos(angle1);
 			if(i1 != 0) {
 				drawType.triangle(bx,by,0,bx5,by5,0,cx5,cy5,0);
+				var m7 = trilateral2_Shaper.transformMatrix;
+				if(m7 != null) {
+					drawType.transform(m7);
+				}
 				drawType.next();
 			}
 			angle1 += step3;
@@ -22288,6 +22884,10 @@ trilateral2Setup_drawings_VioletRoundedRectangle.prototype = $extend(trilateral2
 			cy6 = cy + 30 * Math.cos(angle2);
 			if(i2 != 0) {
 				drawType.triangle(cx,cy,0,bx6,by6,0,cx6,cy6,0);
+				var m8 = trilateral2_Shaper.transformMatrix;
+				if(m8 != null) {
+					drawType.transform(m8);
+				}
 				drawType.next();
 			}
 			angle2 += step5;
@@ -22423,6 +23023,10 @@ trilateral2Setup_drawings_VioletRoundedRectangle.prototype = $extend(trilateral2
 			cy7 = dy + 30 * Math.cos(angle3);
 			if(i3 != 0) {
 				drawType.triangle(dx,dy,0,bx7,by7,0,cx7,cy7,0);
+				var m9 = trilateral2_Shaper.transformMatrix;
+				if(m9 != null) {
+					drawType.transform(m9);
+				}
 				drawType.next();
 			}
 			angle3 += step7;
@@ -22493,8 +23097,16 @@ trilateral2Setup_drawings_YellowDiamond.prototype = $extend(trilateral2Setup_dra
 			dy = cy;
 		}
 		drawType.triangle(ax,ay,0,bx,by,0,dx,dy,0);
+		var m = trilateral2_Shaper.transformMatrix;
+		if(m != null) {
+			drawType.transform(m);
+		}
 		drawType.next();
 		drawType.triangle(bx,by,0,cx,cy,0,dx,dy,0);
+		var m1 = trilateral2_Shaper.transformMatrix;
+		if(m1 != null) {
+			drawType.transform(m1);
+		}
 		drawType.next();
 		var len = 2;
 		var _this = this.pen;
